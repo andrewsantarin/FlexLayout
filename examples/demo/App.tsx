@@ -194,6 +194,7 @@ class App extends React.Component<any, { layoutFile: string | null, model: FlexL
                 <select onChange={this.onSelectLayout.bind(this)}>
                     <option value="default">Default</option>
                     <option value="simple">Simple</option>
+                    <option value="simplewithadd">Simple With Add</option>
                     <option value="justsplitters">Just Splitters</option>
                     <option value="sub">SubLayout</option>
                     <option value="complex">Complex</option>

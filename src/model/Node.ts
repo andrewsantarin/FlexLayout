@@ -205,6 +205,7 @@ abstract class Node {
                         const child = this._children[i];
                         rtn = child._findDropTargetNode(dragNode, x, y);
                         if (rtn !== undefined) {
+                            console.log('_findDropTargetNode', child, dragNode);
                             break;
                         }
                     }
@@ -217,30 +218,45 @@ abstract class Node {
 
     /** @hidden @internal */
     canDrop(dragNode: (Node & IDraggable), x: number, y: number): DropInfo | undefined {
+        console.log('Node.canDrop');
         return undefined;
     }
 
     /** @hidden @internal */
     _canDockInto(dragNode: (Node & IDraggable), dropInfo: DropInfo | undefined): boolean {
         if (dropInfo != undefined) {
+            console.log(dropInfo.location._name, dragNode.getType());
             if (dropInfo.location === DockLocation.CENTER && dropInfo.node.isEnableDrop() === false) {
+                console.log('Node._canDockInto', dropInfo.location._name, 'drop disabled');
                 return false;
             }
 
             // prevent named tabset docking into another tabset, since this would lose the header
             if (dropInfo.location === DockLocation.CENTER && dragNode.getType() === "tabset" && dragNode.getName() !== undefined) {
+                console.log('Node._canDockInto', dropInfo.location._name, 'tabset node');
                 return false;
             }
 
+            // Doesn't work?
+            if (dropInfo.location === DockLocation.CENTER && dragNode.getType() === "tab") {
+                console.log('Node._canDockInto', dropInfo.location._name, 'tabset node');
+                return false;
+            }
+            
             if (dropInfo.location !== DockLocation.CENTER && dropInfo.node.isEnableDivide() === false) {
+                console.log('Node._canDockInto', dropInfo.location._name, 'not center', 'divide disabled');
                 return false;
             }
 
             // finally check model callback to check if drop allowed
             if (this._model._getOnAllowDrop()) {
+                console.log('Node._canDockInto', dropInfo.location._name, 'drop allowed');
                 return (this._model._getOnAllowDrop() as (dragNode: (Node), dropInfo: DropInfo) => boolean)(dragNode, dropInfo);
             }
         }
+        console.log('Node._canDockInto', 'undefined!');
+
+        // return false;
         return true;
     }
 

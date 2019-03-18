@@ -1,0 +1,54 @@
+{
+  "global": {},
+  "layout": {
+    "type": "row",
+    "weight": 100,
+    "children": [
+      {
+        "type": "tabset",
+        "weight": 50,
+        "selected": 0,
+        "children": [
+          {
+            "type": "tab",
+            "name": "Things to try",
+            "component": "text",
+            "config": {
+              "text": "<ul><li>drag tabs</li><li>drag splitters</li><li>double click on tab to rename</li><li>double click on tabstrip to maximize</li><li>use the Add button to add another tab</li></ul>"
+            }
+          }
+        ]
+      },
+      {
+        "type": "tabset",
+        "weight": 50,
+        "selected": 0,
+        "children": [
+          {
+            "type": "tab",
+            "name": "two",
+            "component": "text",
+            "config": {
+              "text": ""
+            }
+          }
+        ]
+      },
+      {
+        "type": "tabset",
+        "weight": 50,
+        "selected": 0,
+        "children": [
+          {
+            "type": "tab",
+            "name": "three",
+            "component": "text",
+            "config": {
+              "text": ""
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

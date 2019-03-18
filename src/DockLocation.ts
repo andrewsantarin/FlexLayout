@@ -56,6 +56,7 @@ class DockLocation {
         else if (y > rect.getBottom() - rect.height / 4) {
             return DockLocation.BOTTOM;
         }
+
         else {
             return DockLocation.CENTER;
         }
