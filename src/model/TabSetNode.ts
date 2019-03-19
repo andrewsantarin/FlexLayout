@@ -135,20 +135,26 @@ class TabSetNode extends Node implements IDraggable, IDropTarget {
         }
         else if (this._contentRect!.contains(x, y)) {
             let dockLocation = DockLocation.getLocation(this._contentRect!, x, y);
-            console.log('dockLocation: ', dockLocation._name);
+            const isDockedToCenterLocation = dockLocation === DockLocation.CENTER;
+            let outlineRect = !isDockedToCenterLocation ? dockLocation.getDockRect(this._rect) : new Rect(x, y, 0, 0);
+            let className = [
+                'flexlayout__outline_rect',
+                isDockedToCenterLocation ? `flexlayout__outline_rect${isDockedToCenterLocation ? '--hidden' : ''}` : '',
+            ].filter(str => str).join(' ');
+            dropInfo = new DropInfo(this, outlineRect, dockLocation, -1, className);
 
-            // Prohibit dropping content inside the center of the tabset space.
-            if (dockLocation === DockLocation.CENTER) {
-                console.log('TabSetNode.canDrop', 2, '2a', 'tabSet', { x, y }, 'tabset center, perform undock');
-                dropInfo = new DropInfo(this, new Rect(x, y, 0, 0), dockLocation, -1, "flexlayout__outline_rect flexlayout__outline_rect--hidden");
-                return dropInfo;
-                // return undefined;
-            }
+            // // Prohibit dropping content inside the center of the tabset space.
+            // if (dockLocation === DockLocation.CENTER) {
+            //     console.log('TabSetNode.canDrop', 2, '2a', 'tabSet', { x, y }, 'tabset center, perform undock');
+            //     dropInfo = new DropInfo(this, new Rect(x, y, 0, 0), dockLocation, -1, "flexlayout__outline_rect flexlayout__outline_rect--hidden");
+            //     return dropInfo;
+            //     // return undefined;
+            // }
 
-            console.log('TabSetNode.canDrop', 2, '2b', 'tabSet', { x, y, }, 'tabset edge, perform split');
-            // For tabset edges, apply split docking.
-            let outlineRect = dockLocation.getDockRect(this._rect);
-            dropInfo = new DropInfo(this, outlineRect, dockLocation, -1, "flexlayout__outline_rect");
+            // console.log('TabSetNode.canDrop', 2, '2b', 'tabSet', { x, y, }, 'tabset edge, perform split');
+            // // For tabset edges, apply split docking.
+            // let outlineRect = dockLocation.getDockRect(this._rect);
+            // dropInfo = new DropInfo(this, outlineRect, dockLocation, -1, "flexlayout__outline_rect");
         }
         else if (this._children.length > 0 && this._tabHeaderRect != undefined && this._tabHeaderRect.contains(x, y)) {
             let child = this._children[0] as TabNode;
@@ -162,10 +168,12 @@ class TabSetNode extends Node implements IDraggable, IDropTarget {
                 r = child.getTabRect()!;
                 childCenter = r.x + r.width / 2;
                 if (x >= p && x < childCenter) {
-                    let dockLocation = DockLocation.CENTER;
+                    // let dockLocation = DockLocation.CENTER;
+                    // TODO: set this to DockLocation.HEADER
+                    let dockLocation = DockLocation.HEADER;
                     let outlineRect = new Rect(r.x - 2, yy, 3, h);
                     // outlineRect = new Rect(r.x - 2, yy, this._outlineTabHeaderWidth, h);
-                    console.log('TabSetNode.canDrop', 3, '3a', 'tabHeaderRect', { x, y, }, 'dropInfo defined, adding to somewhere before the rightmost space');
+                    console.log('TabSetNode.canDrop', 3, '3a', 'tabHeaderRect', { x, y, }, 'dropInfo defined, <<<<<<<< tab header');
                     dropInfo = new DropInfo(this, outlineRect, dockLocation, i, "flexlayout__outline_rect");
                     break;
                 }
@@ -177,7 +185,7 @@ class TabSetNode extends Node implements IDraggable, IDropTarget {
                 let dockLocation = DockLocation.HEADER;
                 let outlineRect = new Rect(r.getRight() - 2, yy, 3, h);
                 // outlineRect = new Rect(r.getRight() - 2, yy, this._outlineTabHeaderWidth, h);
-                console.log('TabSetNode.canDrop', 3, '3b', 'tabHeaderRect', { x, y, }, 'dropInfo still undefined, adding to the rightmost space');
+                console.log('TabSetNode.canDrop', 3, '3b', 'tabHeaderRect', { x, y, }, 'dropInfo still undefined, tab header >>>>>>>>');
                 dropInfo = new DropInfo(this, outlineRect, dockLocation, this._children.length, "flexlayout__outline_rect");
             }
         }
@@ -269,7 +277,8 @@ class TabSetNode extends Node implements IDraggable, IDropTarget {
         }
 
         // simple_bundled dock to existing tabset
-        if (dockLocation === DockLocation.CENTER) {
+        if (dockLocation === DockLocation.CENTER || dockLocation === DockLocation.HEADER) {
+            console.log('DROP TO CENTER');
             let insertPos = index;
             if (insertPos === -1) {
                 insertPos = this._children.length;
