@@ -124,11 +124,9 @@ class TabSetNode extends Node implements IDraggable, IDropTarget {
 
     /** @hidden @internal */
     canDrop(dragNode: (Node & IDraggable), x: number, y: number): DropInfo | undefined {
-        console.log('TabSetNode.canDrop');
         let dropInfo = undefined;
 
         if (dragNode === this) {
-            console.log('TabSetNode.canDrop', 1, 'CENTER', 'moving the whole tabset');
             let dockLocation = DockLocation.CENTER;
             let outlineRect = this._tabHeaderRect;
             dropInfo = new DropInfo(this, outlineRect!, dockLocation, -1, "flexlayout__outline_rect");
@@ -142,19 +140,6 @@ class TabSetNode extends Node implements IDraggable, IDropTarget {
                 isDockedToCenterLocation ? `flexlayout__outline_rect${isDockedToCenterLocation ? '--hidden' : ''}` : '',
             ].filter(str => str).join(' ');
             dropInfo = new DropInfo(this, outlineRect, dockLocation, -1, className);
-
-            // // Prohibit dropping content inside the center of the tabset space.
-            // if (dockLocation === DockLocation.CENTER) {
-            //     console.log('TabSetNode.canDrop', 2, '2a', 'tabSet', { x, y }, 'tabset center, perform undock');
-            //     dropInfo = new DropInfo(this, new Rect(x, y, 0, 0), dockLocation, -1, "flexlayout__outline_rect flexlayout__outline_rect--hidden");
-            //     return dropInfo;
-            //     // return undefined;
-            // }
-
-            // console.log('TabSetNode.canDrop', 2, '2b', 'tabSet', { x, y, }, 'tabset edge, perform split');
-            // // For tabset edges, apply split docking.
-            // let outlineRect = dockLocation.getDockRect(this._rect);
-            // dropInfo = new DropInfo(this, outlineRect, dockLocation, -1, "flexlayout__outline_rect");
         }
         else if (this._children.length > 0 && this._tabHeaderRect != undefined && this._tabHeaderRect.contains(x, y)) {
             let child = this._children[0] as TabNode;
@@ -168,30 +153,25 @@ class TabSetNode extends Node implements IDraggable, IDropTarget {
                 r = child.getTabRect()!;
                 childCenter = r.x + r.width / 2;
                 if (x >= p && x < childCenter) {
-                    // let dockLocation = DockLocation.CENTER;
-                    // TODO: set this to DockLocation.HEADER
                     let dockLocation = DockLocation.HEADER;
                     let outlineRect = new Rect(r.x - 2, yy, 3, h);
+                    // TODO: find out how to add better tactile feedback with tabs. Right now, it's just too narrow.
                     // outlineRect = new Rect(r.x - 2, yy, this._outlineTabHeaderWidth, h);
-                    console.log('TabSetNode.canDrop', 3, '3a', 'tabHeaderRect', { x, y, }, 'dropInfo defined, <<<<<<<< tab header');
                     dropInfo = new DropInfo(this, outlineRect, dockLocation, i, "flexlayout__outline_rect");
                     break;
                 }
                 p = childCenter;
             }
             if (dropInfo == undefined) {
-                // let dockLocation = DockLocation.CENTER;
-                // TODO: set this to DockLocation.HEADER
                 let dockLocation = DockLocation.HEADER;
                 let outlineRect = new Rect(r.getRight() - 2, yy, 3, h);
+                // TODO: find out how to add better tactile feedback with tabs. Right now, it's just too narrow.
                 // outlineRect = new Rect(r.getRight() - 2, yy, this._outlineTabHeaderWidth, h);
-                console.log('TabSetNode.canDrop', 3, '3b', 'tabHeaderRect', { x, y, }, 'dropInfo still undefined, tab header >>>>>>>>');
                 dropInfo = new DropInfo(this, outlineRect, dockLocation, this._children.length, "flexlayout__outline_rect");
             }
         }
 
         if (!dragNode._canDockInto(dragNode, dropInfo)) {
-            console.log('TabSetNode.canDrop', 4, 'can\'t find, won\'t dock');
             return undefined;
         }
 
@@ -278,7 +258,6 @@ class TabSetNode extends Node implements IDraggable, IDropTarget {
 
         // simple_bundled dock to existing tabset
         if (dockLocation === DockLocation.CENTER || dockLocation === DockLocation.HEADER) {
-            console.log('DROP TO CENTER');
             let insertPos = index;
             if (insertPos === -1) {
                 insertPos = this._children.length;
