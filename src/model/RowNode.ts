@@ -282,7 +282,6 @@ class RowNode extends Node implements IDropTarget{
                 let dockLocation = DockLocation.LEFT;
                 let outlineRect = dockLocation.getDockRect(this._rect);
                 outlineRect.width = outlineRect.width / 2;
-                console.log('RowNode.canDrop', 'LEFT');
                 dropInfo = new DropInfo(this, outlineRect, dockLocation, -1, "flexlayout__outline_rect_edge");
             }
             else if (x > this._rect.getRight() - margin && (yy > h / 2 - half && yy < h / 2 + half)) {
@@ -290,14 +289,12 @@ class RowNode extends Node implements IDropTarget{
                 let outlineRect = dockLocation.getDockRect(this._rect);
                 outlineRect.width = outlineRect.width / 2;
                 outlineRect.x += outlineRect.width;
-                console.log('RowNode.canDrop', 'RIGHT');
                 dropInfo = new DropInfo(this, outlineRect, dockLocation, -1, "flexlayout__outline_rect_edge");
             }
             else if (y < this._rect.y + margin && (xx > w / 2 - half && xx < w / 2 + half)) {
                 let dockLocation = DockLocation.TOP;
                 let outlineRect = dockLocation.getDockRect(this._rect);
                 outlineRect.height = outlineRect.height / 2;
-                console.log('RowNode.canDrop', 'TOP');
                 dropInfo = new DropInfo(this, outlineRect, dockLocation, -1, "flexlayout__outline_rect_edge");
             }
             else if (y > this._rect.getBottom() - margin && (xx > w / 2 - half && xx < w / 2 + half)) {
@@ -305,17 +302,13 @@ class RowNode extends Node implements IDropTarget{
                 let outlineRect = dockLocation.getDockRect(this._rect);
                 outlineRect.height = outlineRect.height / 2;
                 outlineRect.y += outlineRect.height;
-                console.log('RowNode.canDrop', 'BOTTOM');
                 dropInfo = new DropInfo(this, outlineRect, dockLocation, -1, "flexlayout__outline_rect_edge");
             }
 
             if (dropInfo !== undefined) {
                 if (!dragNode._canDockInto(dragNode, dropInfo)) {
-                    console.log('RowNode.canDrop', 'can\'t dock here');
                     return undefined;
                 }
-
-                console.log('RowNode.canDrop', '???');
             }
         }
 

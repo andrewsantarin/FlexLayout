@@ -427,9 +427,7 @@ export class Layout extends React.Component<ILayoutProps, any> {
         this.dragDiv!.style.top = pos.y + 5 + "px";
 
         const dropInfo = this.model!._findDropTargetNode(this.dragNode!, pos.x, pos.y);
-        console.log('onDragMove', dropInfo);
         if (dropInfo) {
-            console.log('coords', dropInfo.location, 'evaluate dropinfo location is center', dropInfo.location === DockLocation.CENTER);
             if (dropInfo.location === DockLocation.CENTER) {
                 this.dropInfo = undefined;
                 this.outlineDiv!.className = this.getClassName(dropInfo.className);
@@ -458,11 +456,6 @@ export class Layout extends React.Component<ILayoutProps, any> {
         this.dragDiv = undefined;
         this.hideEdges(rootdiv);
         DragDrop.instance.hideGlass();
-
-        console.log('onDragEnd');
-        console.log('  - dropInfo:', this.dropInfo);
-        console.log('  - dragNode:', this.dragNode);
-        console.log('  - newTabJson:', this.newTabJson);
 
         if (this.dropInfo) {
             if (this.newTabJson !== undefined) {
