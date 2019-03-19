@@ -140,7 +140,9 @@ class TabSetNode extends Node implements IDraggable, IDropTarget {
             // Prohibit dropping content inside the center of the tabset space.
             if (dockLocation === DockLocation.CENTER) {
                 console.log('TabSetNode.canDrop', 2, '2a', 'tabSet', { x, y }, 'tabset center, perform undock');
-                return undefined;
+                dropInfo = new DropInfo(this, new Rect(x, y, 0, 0), dockLocation, -1, "flexlayout__outline_rect flexlayout__outline_rect--hidden");
+                return dropInfo;
+                // return undefined;
             }
 
             console.log('TabSetNode.canDrop', 2, '2b', 'tabSet', { x, y, }, 'tabset edge, perform split');
@@ -170,7 +172,9 @@ class TabSetNode extends Node implements IDraggable, IDropTarget {
                 p = childCenter;
             }
             if (dropInfo == undefined) {
-                let dockLocation = DockLocation.CENTER;
+                // let dockLocation = DockLocation.CENTER;
+                // TODO: set this to DockLocation.HEADER
+                let dockLocation = DockLocation.HEADER;
                 let outlineRect = new Rect(r.getRight() - 2, yy, 3, h);
                 // outlineRect = new Rect(r.getRight() - 2, yy, this._outlineTabHeaderWidth, h);
                 console.log('TabSetNode.canDrop', 3, '3b', 'tabHeaderRect', { x, y, }, 'dropInfo still undefined, adding to the rightmost space');

@@ -10,6 +10,7 @@ class DockLocation {
     static LEFT = new DockLocation("left", Orientation.HORZ, 0);
     static RIGHT = new DockLocation("right", Orientation.HORZ, 1);
     static CENTER = new DockLocation("center", Orientation.VERT, 0);
+    static HEADER = new DockLocation("header", Orientation.VERT, 0);
 
     /** @hidden @internal */
     _name: string;
@@ -41,23 +42,29 @@ class DockLocation {
 
     /** @hidden @internal */
     static getLocation(rect: Rect, x: number, y: number) {
+        console.log('coords', 'x', x, 'y', y);
         if (x < rect.x + rect.width / 4) {
+            console.log('coords', 'left');
             return DockLocation.LEFT;
         }
 
         else if (x > rect.getRight() - rect.width / 4) {
+            console.log('coords', 'right');
             return DockLocation.RIGHT;
         }
 
         else if (y < rect.y + rect.height / 4) {
+            console.log('coords', 'top');
             return DockLocation.TOP;
         }
 
         else if (y > rect.getBottom() - rect.height / 4) {
+            console.log('coords', 'bottom');
             return DockLocation.BOTTOM;
         }
 
         else {
+            console.log('coords', 'tabset header')
             return DockLocation.CENTER;
         }
     }

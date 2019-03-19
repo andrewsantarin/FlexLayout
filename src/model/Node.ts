@@ -160,7 +160,7 @@ abstract class Node {
     }
 
     /** @hidden @internal */
-    _getDrawChildren(): Array<Node> | undefined{
+    _getDrawChildren(): Array<Node> | undefined {
         return this._children;
     }
 
@@ -199,11 +199,13 @@ abstract class Node {
         let rtn: DropInfo | undefined = undefined;
         if (this._rect.contains(x, y)) {
             rtn = this.canDrop(dragNode, x, y);
+            console.log(rtn);
             if (rtn === undefined) {
                 if (this._children.length !== 0) {
                     for (let i = 0; i < this._children.length; i++) {
                         const child = this._children[i];
                         rtn = child._findDropTargetNode(dragNode, x, y);
+                        console.log('child', rtn);
                         if (rtn !== undefined) {
                             console.log('_findDropTargetNode', child, dragNode);
                             break;
@@ -212,6 +214,8 @@ abstract class Node {
                 }
             }
         }
+
+        console.log(rtn);
 
         return rtn;
     }
@@ -225,9 +229,12 @@ abstract class Node {
     /** @hidden @internal */
     _canDockInto(dragNode: (Node & IDraggable), dropInfo: DropInfo | undefined): boolean {
         if (dropInfo != undefined) {
-            console.log(dropInfo.location._name, dragNode.getType());
+            console.log('_canDockInto',
+                'drop location name', `\"${dropInfo.location._name}\"`,
+                'drag node type', `\"${dragNode.getType()}\"`
+            );
             if (dropInfo.location === DockLocation.CENTER && dropInfo.node.isEnableDrop() === false) {
-                console.log('Node._canDockInto', dropInfo.location._name, 'drop disabled');
+                console.log('Node._canDockInto', 9999, dropInfo.location._name, 'drop disabled');
                 return false;
             }
 
@@ -237,24 +244,21 @@ abstract class Node {
                 return false;
             }
 
-            // Doesn't work?
-            if (dropInfo.location === DockLocation.CENTER && dragNode.getType() === "tab") {
-                console.log('Node._canDockInto', dropInfo.location._name, 'tabset node');
-                return false;
-            }
-            
             if (dropInfo.location !== DockLocation.CENTER && dropInfo.node.isEnableDivide() === false) {
                 console.log('Node._canDockInto', dropInfo.location._name, 'not center', 'divide disabled');
                 return false;
             }
+
+            console.log(this._model._getOnAllowDrop());
 
             // finally check model callback to check if drop allowed
             if (this._model._getOnAllowDrop()) {
                 console.log('Node._canDockInto', dropInfo.location._name, 'drop allowed');
                 return (this._model._getOnAllowDrop() as (dragNode: (Node), dropInfo: DropInfo) => boolean)(dragNode, dropInfo);
             }
+
+            console.log('Node._canDockInto', dropInfo.location._name);
         }
-        console.log('Node._canDockInto', 'undefined!');
 
         // return false;
         return true;
@@ -322,7 +326,7 @@ abstract class Node {
     /** @hidden @internal */
     abstract _updateAttrs(json: any): void;
     /** @hidden @internal */
-    abstract _getAttributeDefinitions(): AttributeDefinitions ;
+    abstract _getAttributeDefinitions(): AttributeDefinitions;
     /** @hidden @internal */
     abstract _toJson(): any;
 
