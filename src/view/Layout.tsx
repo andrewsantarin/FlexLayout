@@ -459,7 +459,10 @@ export class Layout extends React.Component<ILayoutProps, any> {
         this.hideEdges(rootdiv);
         DragDrop.instance.hideGlass();
 
-        console.log('onDragEnd', this.dropInfo, this.dragNode, this.newTabJson);
+        console.log('onDragEnd');
+        console.log('  - dropInfo:', this.dropInfo);
+        console.log('  - dragNode:', this.dragNode);
+        console.log('  - newTabJson:', this.newTabJson);
 
         if (this.dropInfo) {
             if (this.newTabJson !== undefined) {
