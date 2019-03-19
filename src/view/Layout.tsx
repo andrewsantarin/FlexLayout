@@ -437,14 +437,6 @@ export class Layout extends React.Component<ILayoutProps, any> {
             this.dropInfo = dropInfo;
             this.outlineDiv!.className = this.getClassName(dropInfo.className);
             dropInfo.rect.positionElement(this.outlineDiv!);
-        } else {
-            // this.outlineDiv!.style.border = '0px none transparent';
-            // const rootdiv = ReactDOM.findDOMNode(this) as HTMLElement;
-            // rootdiv.removeChild(this.outlineDiv!);
-            // rootdiv.removeChild(this.dragDiv!);
-            // this.dragDiv = undefined;
-            // this.hideEdges(rootdiv);
-            // DragDrop.instance.hideGlass();
         }
     }
 
