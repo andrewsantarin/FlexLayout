@@ -1,5 +1,7 @@
 {
-  "global": {},
+  "global": {
+    "tabDragSpeed": 0.15
+  },
   "layout": {
     "type": "row",
     "weight": 100,
@@ -29,7 +31,7 @@
             "name": "two",
             "component": "text",
             "config": {
-              "text": ""
+              "text": "<b>The number two.</b>"
             }
           }
         ]
@@ -44,7 +46,7 @@
             "name": "three",
             "component": "text",
             "config": {
-              "text": ""
+              "text": "Going for a third"
             }
           }
         ]
