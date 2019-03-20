@@ -457,7 +457,6 @@ export class Layout extends React.Component<ILayoutProps, any> {
             else if (this.dragNode !== undefined) {
                 this.doAction(Actions.moveNode(this.dragNode.getId(), this.dropInfo.node.getId(), this.dropInfo.location, this.dropInfo.index));
             }
-
         }
         else {
             // Execute this when .addTabWithDragAndDrop() / .addTabWithDragAndDropIndirect()
