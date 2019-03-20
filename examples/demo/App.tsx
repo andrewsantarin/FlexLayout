@@ -1,12 +1,11 @@
 import * as React from "react";
-import * as ReactDOM from "react-dom";
 import * as FlexLayout from "../../src/index";
 import Utils from "./Utils";
 import { Node, TabSetNode, TabNode, DropInfo, BorderNode } from "../../src/index";
 
 var fields = ["Name", "ISIN", "Bid", "Ask", "Last", "Yield"];
 
-class App extends React.Component<any, { layoutFile: string | null, model: FlexLayout.Model | null, adding: boolean }> {
+export default class App extends React.Component<any, { layoutFile: string | null, model: FlexLayout.Model | null, adding: boolean }> {
 
     loadingLayoutName?: string;
 
@@ -263,5 +262,3 @@ class SimpleTable extends React.Component<{ fields: any, data: any, onClick: any
         </table>;
     }
 }
-
-ReactDOM.render(<App />, document.getElementById("container"));
