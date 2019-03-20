@@ -3,7 +3,7 @@ const webpack = require('webpack');
 module.exports = {
 	mode:'development',
 	entry: {
-		demo: "./examples/demo/App.tsx",
+		demo: "./examples/demo/index.tsx",
 	    tests: "./spec/main.ts"
 	},
 
