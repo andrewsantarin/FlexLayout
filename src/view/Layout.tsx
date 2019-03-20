@@ -429,7 +429,8 @@ export class Layout extends React.Component<ILayoutProps, any> {
         const dropInfo = this.model!._findDropTargetNode(this.dragNode!, pos.x, pos.y);
         if (dropInfo) {
             const isDroppedToCenterLocation = dropInfo.location === DockLocation.CENTER;
-            this.dropInfo = !isDroppedToCenterLocation ? dropInfo : undefined;
+            const isWithinTabset = dropInfo.index === -1; // Moving to between borders & tabsets always generates a positive index number.
+            this.dropInfo = !isDroppedToCenterLocation || !isWithinTabset ? dropInfo : undefined;
             this.outlineDiv!.className = this.getClassName(dropInfo.className);
             dropInfo.rect.positionElement(this.outlineDiv!);
         }
