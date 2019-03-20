@@ -52,5 +52,49 @@
         ]
       }
     ]
-  }
+  },
+  "floatings": [
+    {
+      "type": "tabset",
+      "top": 45,
+      "left": 60,
+      "width": 800,
+      "height": 600,
+      "children": [
+        {
+          "type": "tab",
+          "name": "Stephen King's It: FlexLayout Chronicles",
+          "component": "text",
+          "config": {
+            "text": "Don't you want your boat back, Flexie?"
+          }
+        },
+        {
+          "type": "tab",
+          "component": "text",
+          "name": "Stephen King's It: FlexLayout Chronicles: The Floating",
+          "config": {
+            "text": "It'll float, too."
+          }
+        }
+      ]
+    },
+    {
+      "type": "tabset",
+      "top": 100,
+      "left": 110,
+      "width": 250,
+      "height": 120,
+      "children": [
+        {
+          "type": "tab",
+          "name": "Tabby cat",
+          "component": "text",
+          "config": {
+            "text": "Another floating tab appears!"
+          }
+        }
+      ]
+    },
+  ]
 }
