@@ -459,6 +459,14 @@ export class Layout extends React.Component<ILayoutProps, any> {
             }
 
         }
+        else {
+            // Execute this when .addTabWithDragAndDrop() / .addTabWithDragAndDropIndirect()
+            // has been cancelled by dropping into inapplicable space.
+            if (this.fnNewNodeDropped != undefined) {
+                this.fnNewNodeDropped();
+                this.fnNewNodeDropped = undefined;
+            }
+        }
     }
 
     /** @hidden @internal */
