@@ -11,8 +11,8 @@
     "build:umd": "webpack --config webpack_build.config.js",
     "build:umd:min": "webpack -p --config webpack_build_min.config.js",
     "doc": "typedoc --out typedoc --mode file --exclude \"**/examples/**/*.tsx\"  --readme none ",
-    "start": "webpack-dev-server",
-    "start:dev": "npm run build && npm start"
+    "start:dev": "webpack-dev-server",
+    "start": "npm run build && npm run start:dev"
   },
   "author": "Caplin Systems Ltd",
   "repository": "https://github.com/caplin/FlexLayout",
