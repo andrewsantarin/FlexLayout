@@ -302,6 +302,7 @@ class Model {
         });
 
         json.borders = this._borders._toJson();
+        json.floatings = this._floatings._toJson();
         json.layout = (this._root as RowNode)._toJson();
         return json;
     }
@@ -318,7 +319,7 @@ class Model {
         if (json.borders) {
             model._borders = BorderSet._fromJson(json.borders, model);
         }
-        if (json.floating) {
+        if (json.floatings) {
             model._floatings = FloatingSet._fromJson(json.floatings, model);
         }
         model._root = RowNode._fromJson(json.layout, model);

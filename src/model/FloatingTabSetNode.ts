@@ -1,3 +1,4 @@
+import Model from "./Model";
 import Node from "./Node";
 // import Model from "./Model";
 import DockLocation from "../DockLocation";
@@ -17,6 +18,20 @@ import TabSetNode from "./TabSetNode";
  * - It can't be halved horizontally or vertically to make room for another TabSetNode.
  */
 class FloatingTabSetNode extends TabSetNode {
+    /** @hidden @internal */
+    private _floatings: Array<BorderNode>;
+
+    /** @hidden @internal */
+    constructor(model: Model, json: any) {
+        super(model, json);
+
+        this._floatings = [];
+    }
+
+    getFloatings() {
+        return this._floatings;
+    }
+
     /** @hidden @internal */
     drop(dragNode: (Node & IDraggable), location: DockLocation, index: number) {
         const dockLocation = location;

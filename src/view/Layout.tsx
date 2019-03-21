@@ -19,6 +19,7 @@ import Model from "../model/Model";
 import BorderSet from "../model/BorderSet";
 import { JSMap } from "../Types";
 import IDraggable from "../model/IDraggable";
+import FloatingSet from "../model/FloatingSet";
 
 export interface ILayoutProps {
     model: Model,
@@ -159,6 +160,8 @@ export class Layout extends React.Component<ILayoutProps, any> {
     render() {
         // this.start = Date.now();
         const borderComponents: Array<React.ReactNode> = [];
+        const floatingComponents: Array<React.ReactNode> = [];
+        const floatingTabSetComponents: Array<React.ReactNode> = [];
         const tabSetComponents: Array<React.ReactNode> = [];
         const tabComponents: JSMap<React.ReactNode> = {};
         const splitterComponents: Array<React.ReactNode> = [];
@@ -166,6 +169,7 @@ export class Layout extends React.Component<ILayoutProps, any> {
         this.centerRect = this.model!._layout(this.rect);
 
         this.renderBorder(this.model!.getBorderSet(), borderComponents, tabComponents, splitterComponents);
+        this.renderFloatings(this.model!.getFloatingSet(), floatingComponents, floatingTabSetComponents, tabComponents);
         this.renderChildren(this.model!.getRoot(), tabSetComponents, tabComponents, splitterComponents);
 
         const nextTopIds: Array<string> = [];
@@ -197,6 +201,7 @@ export class Layout extends React.Component<ILayoutProps, any> {
                 })}
                 {borderComponents}
                 {splitterComponents}
+                {floatingTabSetComponents}
             </div>
         );
     }
@@ -227,6 +232,15 @@ export class Layout extends React.Component<ILayoutProps, any> {
                 }
             }
         }
+    }
+
+    renderFloatings(floatingSet: FloatingSet, floatingComponents: Array<React.ReactNode>, floatingTabSetComponents: Array<React.ReactNode>, tabComponents: JSMap<React.ReactNode>) {
+        console.log('DEBUGME', 'floatingTabSetComponents', floatingTabSetComponents);
+        console.log('DEBUGME', 'tabComponents', tabComponents);
+        floatingSet.getFloatings().forEach(floating => {
+            console.log('DEBUGME', floating);
+        });
+        console.log('');
     }
 
     /** @hidden @internal */
@@ -381,7 +395,15 @@ export class Layout extends React.Component<ILayoutProps, any> {
         else {
             this.dragNode = node;
             this.dragDivText = dragDivText;
-            DragDrop.instance.startDrag(event, this.onDragStart.bind(this), this.onDragMove.bind(this), this.onDragEnd.bind(this), this.onCancelDrag.bind(this), onClick, onDoubleClick);
+            DragDrop.instance.startDrag(
+                event,
+                this.onDragStart.bind(this),
+                this.onDragMove.bind(this),
+                this.onDragEnd.bind(this),
+                this.onCancelDrag.bind(this),
+                onClick,
+                onDoubleClick
+            );
         }
     }
 
