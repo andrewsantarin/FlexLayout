@@ -33,6 +33,25 @@
       }
     ]
   },
+  "floatinglayout": {
+    "type": "floatingrow",
+    "id": "#10000",
+    "children": [
+      {
+        "type": "tabset",
+        "weight": 25,
+        "id": "#10001",
+        "children": [
+          {
+            "type": "tab",
+            "name": "Float",
+            "component": "grid",
+            "id": "#10002"
+          }
+        ]
+      }
+    ]
+  },
   "borders": [
     {
       "type": "border",

@@ -19,7 +19,6 @@ import Model from "../model/Model";
 import BorderSet from "../model/BorderSet";
 import { JSMap } from "../Types";
 import IDraggable from "../model/IDraggable";
-import FloatingSet from "../model/FloatingSet";
 
 export interface ILayoutProps {
     model: Model,
@@ -160,8 +159,6 @@ export class Layout extends React.Component<ILayoutProps, any> {
     render() {
         // this.start = Date.now();
         const borderComponents: Array<React.ReactNode> = [];
-        const floatingComponents: Array<React.ReactNode> = [];
-        const floatingTabSetComponents: Array<React.ReactNode> = [];
         const tabSetComponents: Array<React.ReactNode> = [];
         const tabComponents: JSMap<React.ReactNode> = {};
         const splitterComponents: Array<React.ReactNode> = [];
@@ -169,7 +166,6 @@ export class Layout extends React.Component<ILayoutProps, any> {
         this.centerRect = this.model!._layout(this.rect);
 
         this.renderBorder(this.model!.getBorderSet(), borderComponents, tabComponents, splitterComponents);
-        this.renderFloatings(this.model!.getFloatingSet(), floatingComponents, floatingTabSetComponents, tabComponents);
         this.renderChildren(this.model!.getRoot(), tabSetComponents, tabComponents, splitterComponents);
 
         const nextTopIds: Array<string> = [];
@@ -201,7 +197,6 @@ export class Layout extends React.Component<ILayoutProps, any> {
                 })}
                 {borderComponents}
                 {splitterComponents}
-                {floatingTabSetComponents}
             </div>
         );
     }
@@ -234,17 +229,44 @@ export class Layout extends React.Component<ILayoutProps, any> {
         }
     }
 
-    renderFloatings(floatingSet: FloatingSet, floatingComponents: Array<React.ReactNode>, floatingTabSetComponents: Array<React.ReactNode>, tabComponents: JSMap<React.ReactNode>) {
-        console.log('DEBUGME', 'floatingTabSetComponents', floatingTabSetComponents);
-        console.log('DEBUGME', 'tabComponents', tabComponents);
-        floatingSet.getFloatings().forEach(floating => {
-            console.log('DEBUGME', floating);
-        });
-        console.log('');
-    }
+    // renderFloatingChildren(
+    //     node: (FloatingRowNode | TabSetNode),
+    //     tabSetComponents: Array<React.ReactNode>,
+    //     tabComponents: JSMap<React.ReactNode>
+    // ) {
+    //     const drawChildren = node._getDrawChildren();
+
+    //     drawChildren.forEach((child, i) => {
+    //         if (child instanceof TabSetNode) {
+    //             tabSetComponents.push(<FloatingTabSet key={child.getId()} layout={this} node={child} />);
+    //             this.renderFloatingChildren(child, tabSetComponents, tabComponents);
+    //         }
+    //         else if (child instanceof TabNode) {
+    //             const selectedTab = child.getParent()!.getChildren()[(child.getParent() as TabSetNode).getSelected()];
+    //             if (selectedTab === undefined) {
+    //                 debugger; // this should not happen!
+    //             }
+    //             tabComponents[child.getId()] = <Tab
+    //                 key={child.getId()}
+    //                 layout={this}
+    //                 node={child}
+    //                 selected={child === selectedTab}
+    //                 factory={this.props.factory}>
+    //             </Tab>;
+    //         }
+    //         else {// is row
+    //             // Unlike layout tabsets, floating tabsets won't support rows, only tabs, so we won't need to calculate them.
+    //         }
+    //     });
+    // }
 
     /** @hidden @internal */
-    renderChildren(node: (RowNode | TabSetNode), tabSetComponents: Array<React.ReactNode>, tabComponents: JSMap<React.ReactNode>, splitterComponents: Array<React.ReactNode>) {
+    renderChildren(
+        node: (RowNode | TabSetNode),
+        tabSetComponents: Array<React.ReactNode>,
+        tabComponents: JSMap<React.ReactNode>,
+        splitterComponents: Array<React.ReactNode>
+    ) {
         const drawChildren = node._getDrawChildren();
 
         for (let i = 0; i < drawChildren!.length; i++) {
@@ -453,6 +475,7 @@ export class Layout extends React.Component<ILayoutProps, any> {
             const isDroppedToCenterLocation = dropInfo.location === DockLocation.CENTER;
             const isWithinTabset = dropInfo.index === -1; // Moving to between borders & tabsets always generates a positive index number.
             this.dropInfo = !isDroppedToCenterLocation || !isWithinTabset ? dropInfo : undefined;
+            this.dropInfo = dropInfo;
             this.outlineDiv!.className = this.getClassName(dropInfo.className);
             dropInfo.rect.positionElement(this.outlineDiv!);
         }

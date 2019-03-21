@@ -19,6 +19,9 @@ class DockLocation {
     /** @hidden @internal */
     _indexPlus: number;
 
+    public x: number = -1;
+    public y: number = -1;
+
     /** @hidden @internal */
     constructor(name: string, orientation: Orientation, indexPlus: number) {
         this._name = name;
@@ -43,23 +46,38 @@ class DockLocation {
     /** @hidden @internal */
     static getLocation(rect: Rect, x: number, y: number) {
         if (x < rect.x + rect.width / 4) {
-            return DockLocation.LEFT;
+            let dockLocation = DockLocation.LEFT;
+            dockLocation.x = x;
+            dockLocation.y = y;
+            return dockLocation;
         }
 
         else if (x > rect.getRight() - rect.width / 4) {
-            return DockLocation.RIGHT;
+            let dockLocation = DockLocation.RIGHT;
+            dockLocation.x = x;
+            dockLocation.y = y;
+            return dockLocation;
         }
 
         else if (y < rect.y + rect.height / 4) {
-            return DockLocation.TOP;
+            let dockLocation = DockLocation.TOP;
+            dockLocation.x = x;
+            dockLocation.y = y;
+            return dockLocation;
         }
 
         else if (y > rect.getBottom() - rect.height / 4) {
-            return DockLocation.BOTTOM;
+            let dockLocation = DockLocation.BOTTOM;
+            dockLocation.x = x;
+            dockLocation.y = y;
+            return dockLocation;
         }
 
         else {
-            return DockLocation.CENTER;
+            let dockLocation = DockLocation.CENTER;
+            dockLocation.x = x;
+            dockLocation.y = y;
+            return dockLocation;
         }
     }
 

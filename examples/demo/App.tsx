@@ -23,7 +23,7 @@ export default class App extends React.Component<any, { layoutFile: string | nul
     }
 
     componentDidMount() {
-        this.loadLayout("simplewithadd", false);
+        this.loadLayout("default", false);
     }
 
     save() {
@@ -193,9 +193,8 @@ export default class App extends React.Component<any, { layoutFile: string | nul
         return <div className="app">
             <div className="toolbar">
                 <select onChange={this.onSelectLayout.bind(this)}>
-                    <option value="simplewithadd">Simple With Add</option>
-                    <option value="simple">Simple</option>
                     <option value="default">Default</option>
+                    <option value="simple">Simple</option>
                     <option value="justsplitters">Just Splitters</option>
                     <option value="sub">SubLayout</option>
                     <option value="complex">Complex</option>

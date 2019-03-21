@@ -1,13 +1,13 @@
 import {JSMap} from "../Types";
 import Node from "./Node";
 import RowNode from "./RowNode";
+import FloatingNode from "./FloatingNode";
 import Action from "./Action";
 import Actions from "./Actions";
 import TabNode from "./TabNode";
 import TabSetNode from "./TabSetNode";
 import BorderSet from "./BorderSet";
 import BorderNode from "./BorderNode";
-import FloatingSet from "./FloatingSet";
 import DockLocation from "../DockLocation";
 import AttributeDefinitions from "../AttributeDefinitions";
 import Attribute from "../Attribute";
@@ -37,7 +37,6 @@ class Model {
     /** @hidden @internal */
     private _borders: BorderSet;
     /** @hidden @internal */
-    private _floatings: FloatingSet;
     /** @hidden @internal */
     private _onAllowDrop?: (dragNode: (Node), dropInfo: DropInfo) => boolean;
     /** @hidden @internal */
@@ -57,7 +56,6 @@ class Model {
         this._idMap = {};
         this._nextId = 0;
         this._borders = new BorderSet(this);
-        this._floatings = new FloatingSet(this);
     }
 
      /** @hidden @internal */
@@ -99,19 +97,19 @@ class Model {
     }
 
     /**
+     * Gets the FloatingNode of the model
+     * @returns {FloatingNode}
+     */
+    getFloating(): FloatingNode | undefined {
+        return undefined;
+    }
+
+    /**
      * Gets the
      * @returns {BorderSet|*}
      */
     getBorderSet() {
         return this._borders;
-    }
-
-    /**
-     * Gets the
-     * @returns {FloatingSet|*}
-     */
-    getFloatingSet() {
-        return this._floatings;
     }
 
     /** @hidden @internal */
@@ -302,7 +300,6 @@ class Model {
         });
 
         json.borders = this._borders._toJson();
-        json.floatings = this._floatings._toJson();
         json.layout = (this._root as RowNode)._toJson();
         return json;
     }
@@ -318,9 +315,6 @@ class Model {
 
         if (json.borders) {
             model._borders = BorderSet._fromJson(json.borders, model);
-        }
-        if (json.floatings) {
-            model._floatings = FloatingSet._fromJson(json.floatings, model);
         }
         model._root = RowNode._fromJson(json.layout, model);
         model._tidy(); // initial tidy of node tree
