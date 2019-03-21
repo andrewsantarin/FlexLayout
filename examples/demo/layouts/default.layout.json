@@ -36,11 +36,11 @@
   "borders": [
     {
       "type": "border",
-       "location": "left",
+      "location": "left",
       "children": [
         {
           "type": "tab",
-          "enableClose":false,
+          "enableClose": false,
           "name": "Navigation",
           "component": "grid",
           "id": "#24"
@@ -49,11 +49,11 @@
     },
     {
       "type": "border",
-       "location": "right",
+      "location": "right",
       "children": [
         {
           "type": "tab",
-          "enableClose":false,
+          "enableClose": false,
           "name": "Options",
           "component": "grid",
           "id": "#3"
@@ -66,14 +66,14 @@
       "children": [
         {
           "type": "tab",
-          "enableClose":false,
+          "enableClose": false,
           "name": "Activity Blotter",
           "component": "grid",
           "id": "#2"
         },
         {
           "type": "tab",
-          "enableClose":false,
+          "enableClose": false,
           "name": "Execution Blotter",
           "component": "grid",
           "id": "#1"
