@@ -58,7 +58,7 @@ npm install
 npm start
 ```
 
-Replace the `wip/<the-wip-branch-name>` with any particular development branch I'm working on. There will be three groups of branches at work:
+Replace the `wip/<the-wip-branch-name>` with any particular development branch I'm working on. If you want to see what's in store for this library, don't look at the `master` branch. Instead, refer to one of these three groups:
 
 - `develop` - merge of all `feature` commits
 - `feature` - polished up commits
