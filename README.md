@@ -2,6 +2,72 @@
 
 FlexLayout is a layout manager that arranges React components in multiple tab sets, these can be resized and moved.
 
+------------
+## Notes from the Contributor
+
+Hello, there. You might be wondering, "What the fork? What's going on?"
+
+Terrible joke, I know.
+
+To put it simply: It's a version of `FlexLayout` (a.k.a. `flexlayout-react` on NPM) which is still very much a work in progress. Currenly, I'm developing a feature which will support docking & undocking of tabs.
+
+See my Imgur upload (https://i.imgur.com/Qs2ohCQ.png) for a rough prototype screenshot.
+
+### Premise and Objective
+If you're in dire need of a React.js library that supports tabsets which can both be aligned to grid and float independently one the screen, then this extended library is most likely for you.
+
+The library extension was built for an upcoming product at my full-time job, actually. There are a lot of amazing libraries out there which support dock-like features in the browser, two of which are built specifically for React (this library is one of them!):
+
+- https://github.com/caplin/FlexLayout ([demo](https://rawgit.com/caplin/FlexLayout/demos/demos/v0.30/demo/index.html))
+  you're looking at it right now
+
+- https://github.com/golden-layout/golden-layout ([demo](http://golden-layout.com))
+  jQuery dependent, even if you use React.js
+
+- https://github.com/palantir/react-mosaic ([demo](https://nomcopter.github.io/react-mosaic))
+  it integrates with https://github.com/palantir/blueprint (formerly from the same author) if you want to use that UI toolkit, really cool; its docking API -- not so much.
+
+- https://github.com/WebCabin/wcDocker ([demo](http://docker.webcabin.org))
+  nice and all, but I can't find any React.js integration docs anywhere. also sadly jQuery-dependent, like `golden-layout`.
+
+- https://github.com/coderespawn/dock-spawn ([demo](http://www.dockspawn.com/))
+  Written in Dart.
+
+- https://github.com/phosphorjs/phosphor ([demo](http://phosphorjs.github.io/examples/dockpanel))
+  Widget feels really snappy, but I'll have to write my project as a Phosphor.js project first as the main, then React.js in the underlying components. Not what I want.
+
+- [ExtJS `Ext.WindowManager`](https://docs.sencha.com/extjs/6.5.2/classic/Ext.WindowManager.html)
+  My colleagues currently use this for **existing** projects only.
+
+However (**massive** however), none of them (not even vanilla `FlexLayout`) are even this close to supporting the docking system for my needs: 
+
+- It needs to work in an existing React ecosystem. Therefore, no, I can't use Dart, Phosphor or jQuery.
+- It needs to present the widgets like how an IDE does: tabs grouped into tabsets grouped into columns grouped into rows, floating tabsets and then some.
+- It needs to be actively maintained, not a 3-year fossil.
+
+All of this research and development started [here](https://github.com/caplin/FlexLayout/issues/11) and [here](https://github.com/golden-layout/golden-layout/issues/189).
+
+### Where to start? / Usage / Installation
+I'll leave the existing docs below. If you want to preview this library, then do this:
+
+```sh
+git clone https://github.com/andrewsantarin/FlexLayout.git
+cd FlexLayout
+git checkout -b branch origin/wip/<the-wip-branch-name>
+npm install
+npm start
+```
+
+Replace the `wip/<the-wip-branch-name>` with any particular development branch I'm working on. There will be three groups of branches at work:
+
+- `develop` - merge of all `feature` commits
+- `feature` - polished up commits
+- `wip` - totally new stuff, very unstable
+
+Once you run `npm start`, wait for the `webpack` bundler to finish, then open http://localhost:3000 on your local browser.
+
+------------
+
 ![FlexLayout Demo Screenshot](/../screenshots/github_images/v0.20/demo1.png?raw=true "FlexLayout Demo Screenshot")
 
 [Run the Demo](https://rawgit.com/caplin/FlexLayout/demos/demos/v0.30/demo/index.html)
