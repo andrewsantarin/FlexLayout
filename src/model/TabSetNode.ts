@@ -11,8 +11,6 @@ import BorderNode from "./BorderNode";
 import Orientation from "../Orientation";
 import IDraggable from "./IDraggable";
 import IDropTarget from "./IDropTarget";
-import FloatingNode from "./FloatingNode";
-import { Tab } from "../view/Tab";
 
 class TabSetNode extends Node implements IDraggable, IDropTarget {
     public static readonly TYPE = "tabset";
@@ -260,34 +258,23 @@ class TabSetNode extends Node implements IDraggable, IDropTarget {
 
         // simple_bundled dock to existing tabset
         if (dockLocation === DockLocation.CENTER) {
-            console.log('DEBUGME', dragNode);
-            console.log('  -', 'DockLocation.CENTER');
-            console.log('  -', 'dockLocation', dockLocation);
-            console.log('  -', 'this.attributeDefinitions', this.getId());
-
-            // let tabSet: TabSetNode | undefined;
-            // if (dragNode instanceof TabNode) {
-            //     tabSet = new TabSetNode(this._model, {});
-            //     tabSet._addChild(dragNode);
-            //     dragParent = tabSet;
-            // }
-            // else {
-            //     tabSet = dragNode as TabSetNode;
-            // }
             let tabSet: TabSetNode;
 
             if (dragNode instanceof TabNode) {
-                
+                tabSet = new TabSetNode(this._model, {});
+                tabSet._addChild(dragNode);
+            } else {
+                tabSet = dragNode as TabSetNode;
             }
 
-            tabSet.setCoordinates(dockLocation.x, dockLocation.y);
+            tabSet._setX(dockLocation.x);
+            tabSet._setY(dockLocation.y);
 
             // create a tabset in the free-floating space.
             const floatingNode = this._model.getFloating();
+            floatingNode._addChild(tabSet);
 
-
-
-            console.log(floatingNode, tabSet);
+            this._model._setActiveTabset(tabSet);
         }
         if (dockLocation === DockLocation.HEADER) {
             let insertPos = index;
@@ -308,7 +295,6 @@ class TabSetNode extends Node implements IDraggable, IDropTarget {
                 });
             }
             this._model._setActiveTabset(this);
-
         }
         else {
             let tabSet: TabSetNode | undefined;
