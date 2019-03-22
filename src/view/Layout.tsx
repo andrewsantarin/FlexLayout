@@ -9,6 +9,7 @@ import Rect from "../Rect";
 import DockLocation from "../DockLocation";
 import Node from "../model/Node";
 import RowNode from "../model/RowNode";
+import FloatingNode from "../model/FloatingNode";
 import TabNode from "../model/TabNode";
 import TabSetNode from "../model/TabSetNode";
 import BorderNode from "../model/BorderNode";
@@ -166,6 +167,7 @@ export class Layout extends React.Component<ILayoutProps, any> {
         this.centerRect = this.model!._layout(this.rect);
 
         this.renderBorder(this.model!.getBorderSet(), borderComponents, tabComponents, splitterComponents);
+        this.renderFloating(this.model!.getFloatingRoot(), tabSetComponents, tabComponents);
         this.renderChildren(this.model!.getRoot(), tabSetComponents, tabComponents, splitterComponents);
 
         const nextTopIds: Array<string> = [];
@@ -225,6 +227,36 @@ export class Layout extends React.Component<ILayoutProps, any> {
                         </Tab>;
                     }
                 }
+            }
+        }
+    }
+
+    renderFloating(
+        node: (FloatingNode | TabSetNode),
+        tabSetComponents: Array<React.ReactNode>,
+        tabComponents: JSMap<React.ReactNode>
+    ) {
+        const drawChildren = node._getDrawChildren();
+
+        for (let i = 0; i < drawChildren!.length; i++) {
+            const child = drawChildren![i];
+
+            if (child instanceof TabSetNode) {
+                tabSetComponents.push(<TabSet key={child.getId()} layout={this} node={child} />);
+                this.renderFloating(child, tabSetComponents, tabComponents);
+            }
+            else if (child instanceof TabNode) {
+                const selectedTab = child.getParent()!.getChildren()[(child.getParent() as TabSetNode).getSelected()];
+                if (selectedTab === undefined) {
+                    debugger; // this should not happen!
+                }
+                tabComponents[child.getId()] = <Tab
+                    key={child.getId()}
+                    layout={this}
+                    node={child}
+                    selected={child === selectedTab}
+                    factory={this.props.factory}>
+                </Tab>;
             }
         }
     }
@@ -472,9 +504,6 @@ export class Layout extends React.Component<ILayoutProps, any> {
 
         const dropInfo = this.model!._findDropTargetNode(this.dragNode!, pos.x, pos.y);
         if (dropInfo) {
-            const isDroppedToCenterLocation = dropInfo.location === DockLocation.CENTER;
-            const isWithinTabset = dropInfo.index === -1; // Moving to between borders & tabsets always generates a positive index number.
-            this.dropInfo = !isDroppedToCenterLocation || !isWithinTabset ? dropInfo : undefined;
             this.dropInfo = dropInfo;
             this.outlineDiv!.className = this.getClassName(dropInfo.className);
             dropInfo.rect.positionElement(this.outlineDiv!);
@@ -490,6 +519,7 @@ export class Layout extends React.Component<ILayoutProps, any> {
         this.hideEdges(rootdiv);
         DragDrop.instance.hideGlass();
 
+
         if (this.dropInfo) {
             if (this.newTabJson !== undefined) {
                 this.doAction(Actions.addNode(this.newTabJson, this.dropInfo.node.getId(), this.dropInfo.location, this.dropInfo.index));
@@ -501,6 +531,7 @@ export class Layout extends React.Component<ILayoutProps, any> {
                 this.newTabJson = undefined;
             }
             else if (this.dragNode !== undefined) {
+                console.log(this.dragNode.getType(), this.dropInfo.node.getType());
                 this.doAction(Actions.moveNode(this.dragNode.getId(), this.dropInfo.node.getId(), this.dropInfo.location, this.dropInfo.index));
             }
         }

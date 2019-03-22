@@ -35,8 +35,9 @@ class Model {
     /** @hidden @internal */
     private _root?: RowNode;
     /** @hidden @internal */
-    private _borders: BorderSet;
+    private _floating?: FloatingNode;
     /** @hidden @internal */
+    private _borders: BorderSet;
     /** @hidden @internal */
     private _onAllowDrop?: (dragNode: (Node), dropInfo: DropInfo) => boolean;
     /** @hidden @internal */
@@ -100,8 +101,8 @@ class Model {
      * Gets the FloatingNode of the model
      * @returns {FloatingNode}
      */
-    getFloating(): FloatingNode | undefined {
-        return undefined;
+    getFloatingRoot() {
+        return this._floating as FloatingNode;
     }
 
     /**
@@ -124,6 +125,7 @@ class Model {
     visitNodes(fn: (node: Node, level: number) => void) {
         this._borders._forEachNode(fn);
         (this._root as RowNode)._forEachNode(fn, 0);
+        (this._floating as FloatingNode)._forEachNode(fn, 0);
     }
 
     /**
@@ -154,9 +156,12 @@ class Model {
             case Actions.MOVE_NODE:
                 {
                     const fromNode = this._idMap[action.data["fromNode"]] as (Node & IDraggable);
+                    console.log(action);
                     if (fromNode instanceof TabNode || fromNode instanceof TabSetNode) {
+                        console.log('A');
                         let toNode = this._idMap[action.data["toNode"]] as (Node & IDropTarget);
                         if (toNode instanceof TabSetNode || toNode instanceof BorderNode || toNode instanceof RowNode) {
+                            console.log('B');
                             toNode.drop(fromNode, DockLocation.getByName(action.data["location"]), action.data["index"]);
                         }
                     }
@@ -300,6 +305,7 @@ class Model {
         });
 
         json.borders = this._borders._toJson();
+        json.floating = (this._floating as FloatingNode)._toJson();
         json.layout = (this._root as RowNode)._toJson();
         return json;
     }
@@ -316,6 +322,12 @@ class Model {
         if (json.borders) {
             model._borders = BorderSet._fromJson(json.borders, model);
         }
+
+        const floatingJson = json.floating || {
+            type: "floating",
+            children: []
+        };
+        model._floating = FloatingNode._fromJson(floatingJson, model);
         model._root = RowNode._fromJson(json.layout, model);
         model._tidy(); // initial tidy of node tree
         return model;
@@ -365,6 +377,7 @@ class Model {
     _tidy() {
         //console.log("before _tidy", this.toString());
         (this._root as RowNode)._tidy();
+        // (this._floating as FloatingNode)._tidy();
         //console.log("after _tidy", this.toString());
     }
 
