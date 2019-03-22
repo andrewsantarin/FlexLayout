@@ -118,6 +118,16 @@ class TabSetNode extends Node implements IDraggable, IDropTarget {
     }
 
     /** @hidden @internal */
+    _setTop(top: number) {
+        this._attributes["top"] = top;
+    }
+
+    /** @hidden @internal */
+    _setLeft(left: number) {
+        this._attributes["left"] = left;
+    }
+
+    /** @hidden @internal */
     _setSelected(index: number) {
         this._attributes["selected"] = index;
     }
@@ -258,23 +268,33 @@ class TabSetNode extends Node implements IDraggable, IDropTarget {
 
         // simple_bundled dock to existing tabset
         if (dockLocation === DockLocation.CENTER) {
-            let tabSet: TabSetNode;
+            // let tabSet: TabSetNode;
+
+            console.log('DEBUGME', 'dockLocation === DockLocation.CENTER');
 
             if (dragNode instanceof TabNode) {
-                tabSet = new TabSetNode(this._model, {});
-                tabSet._addChild(dragNode);
+                console.log('  -', 'TabNode');
+                console.log('   ', 'Creating new tabSet...');
+                console.log('   ', 'Adding dragNode as child to new tabSet...');
+                // tabSet = new TabSetNode(this._model, {});
+                // tabSet._addChild(dragNode);
             } else {
-                tabSet = dragNode as TabSetNode;
+                console.log('  -', 'TabSetNode');
+                // tabSet = dragNode as TabSetNode;
             }
 
-            tabSet._setX(dockLocation.x);
-            tabSet._setY(dockLocation.y);
+            console.log('  -', 'Setting tabSet dimensions & positions');
+            console.log('   ', 'LEFT', dockLocation.x);
+            console.log('   ', ' TOP', dockLocation.y);
+            // tabSet._setLeft(dockLocation.x);
+            // tabSet._setTop(dockLocation.y);
+            
+            console.log('  -', 'Assigning tabSet to the floatingNode');
+            // // create a tabset in the free-floating space.
+            // const floatingNode = this._model.getFloating();
+            // floatingNode._addChild(tabSet);
 
-            // create a tabset in the free-floating space.
-            const floatingNode = this._model.getFloating();
-            floatingNode._addChild(tabSet);
-
-            this._model._setActiveTabset(tabSet);
+            // this._model._setActiveTabset(tabSet);
         }
         if (dockLocation === DockLocation.HEADER) {
             let insertPos = index;
@@ -406,6 +426,8 @@ class TabSetNode extends Node implements IDraggable, IDropTarget {
         attributeDefinitions.add("id", undefined).setType(Attribute.ID);
 
         attributeDefinitions.add("weight", 100);
+        attributeDefinitions.add("top", undefined);
+        attributeDefinitions.add("left", undefined);
         attributeDefinitions.add("width", undefined);
         attributeDefinitions.add("height", undefined);
         attributeDefinitions.add("selected", 0);
