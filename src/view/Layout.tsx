@@ -500,7 +500,6 @@ export class Layout extends React.Component<ILayoutProps, any> {
                 this.newTabJson = undefined;
             }
             else if (this.dragNode !== undefined) {
-                console.log(this.dragNode.getType(), this.dropInfo.node.getType());
                 this.doAction(Actions.moveNode(this.dragNode.getId(), this.dropInfo.node.getId(), this.dropInfo.location, this.dropInfo.index));
             }
         }

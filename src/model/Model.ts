@@ -156,12 +156,9 @@ class Model {
             case Actions.MOVE_NODE:
                 {
                     const fromNode = this._idMap[action.data["fromNode"]] as (Node & IDraggable);
-                    console.log(action);
                     if (fromNode instanceof TabNode || fromNode instanceof TabSetNode) {
-                        console.log('A');
                         let toNode = this._idMap[action.data["toNode"]] as (Node & IDropTarget);
                         if (toNode instanceof TabSetNode || toNode instanceof BorderNode || toNode instanceof RowNode) {
-                            console.log('B');
                             toNode.drop(fromNode, DockLocation.getByName(action.data["location"]), action.data["index"]);
                         }
                     }
