@@ -167,7 +167,6 @@ export class Layout extends React.Component<ILayoutProps, any> {
         this.centerRect = this.model!._layout(this.rect);
 
         this.renderBorder(this.model!.getBorderSet(), borderComponents, tabComponents, splitterComponents);
-        this.renderFloating(this.model!.getFloatingRoot(), tabSetComponents, tabComponents);
         this.renderChildren(this.model!.getRoot(), tabSetComponents, tabComponents, splitterComponents);
 
         const nextTopIds: Array<string> = [];
@@ -199,6 +198,7 @@ export class Layout extends React.Component<ILayoutProps, any> {
                 })}
                 {borderComponents}
                 {splitterComponents}
+                {this.renderFloating(this.model!.getFloatingRoot())}
             </div>
         );
     }
@@ -231,34 +231,43 @@ export class Layout extends React.Component<ILayoutProps, any> {
         }
     }
 
-    renderFloating(
-        node: (FloatingNode | TabSetNode),
-        tabSetComponents: Array<React.ReactNode>,
-        tabComponents: JSMap<React.ReactNode>
-    ) {
-        const drawChildren = node._getDrawChildren();
+    renderFloating(node: FloatingNode) {
+        const drawChildren = (node._getDrawChildren() as Array<TabSetNode>);
+        const floating = drawChildren.map((tabSetNode, i) => {
+            const tabSetActive = tabSetNode.isActive();
+            const tabSetNodeId = tabSetNode.getId();
+            const zIndex = (tabSetActive ? drawChildren.length + 1 : i) * 5;
 
-        for (let i = 0; i < drawChildren!.length; i++) {
-            const child = drawChildren![i];
+            return (
+                <div
+                    className="flexlayout__floating"
+                    key={tabSetNodeId}
+                    style={{ zIndex }}
+                >
+                    <TabSet
+                        key={tabSetNodeId}
+                        layout={this}
+                        node={tabSetNode}
+                    />
+                    {(tabSetNode.getChildren() as Array<TabNode>).map((tabNode) => {
+                        const tabNodeId = tabNode.getId();
+                        const selectedTabNode = tabSetNode.getChildren()[tabSetNode.getSelected()];
 
-            if (child instanceof TabSetNode) {
-                tabSetComponents.push(<TabSet key={child.getId()} layout={this} node={child} />);
-                this.renderFloating(child, tabSetComponents, tabComponents);
-            }
-            else if (child instanceof TabNode) {
-                const selectedTab = child.getParent()!.getChildren()[(child.getParent() as TabSetNode).getSelected()];
-                if (selectedTab === undefined) {
-                    debugger; // this should not happen!
-                }
-                tabComponents[child.getId()] = <Tab
-                    key={child.getId()}
-                    layout={this}
-                    node={child}
-                    selected={child === selectedTab}
-                    factory={this.props.factory}>
-                </Tab>;
-            }
-        }
+                        return (
+                            <Tab
+                                key={tabNodeId}
+                                layout={this}
+                                node={tabNode}
+                                selected={tabNode === selectedTabNode}
+                                factory={this.props.factory}
+                            />
+                        );
+                    })}
+                </div>
+            );
+        });
+
+        return floating;
     }
 
     /** @hidden @internal */
