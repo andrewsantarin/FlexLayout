@@ -9,7 +9,7 @@ Hello, there. You might be wondering, "What the fork? What's going on?"
 
 Terrible joke, I know.
 
-To put it simply: It's a version of `FlexLayout` (a.k.a. `flexlayout-react` on NPM) which is still very much a work in progress. Currenly, I'm developing a feature which will support docking & undocking of tabs.
+To put it simply: It's a version of `FlexLayout` (a.k.a. [`flexlayout-react`](https://www.npmjs.com/package/flexlayout-react) on NPM) which is still very much a work in progress. Currenly, I'm developing a feature which will support docking & undocking of tabs.
 
 See my Imgur upload (https://i.imgur.com/Qs2ohCQ.png) for a rough prototype screenshot.
 
