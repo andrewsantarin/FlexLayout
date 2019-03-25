@@ -261,37 +261,6 @@ export class Layout extends React.Component<ILayoutProps, any> {
         }
     }
 
-    // renderFloatingChildren(
-    //     node: (FloatingRowNode | TabSetNode),
-    //     tabSetComponents: Array<React.ReactNode>,
-    //     tabComponents: JSMap<React.ReactNode>
-    // ) {
-    //     const drawChildren = node._getDrawChildren();
-
-    //     drawChildren.forEach((child, i) => {
-    //         if (child instanceof TabSetNode) {
-    //             tabSetComponents.push(<FloatingTabSet key={child.getId()} layout={this} node={child} />);
-    //             this.renderFloatingChildren(child, tabSetComponents, tabComponents);
-    //         }
-    //         else if (child instanceof TabNode) {
-    //             const selectedTab = child.getParent()!.getChildren()[(child.getParent() as TabSetNode).getSelected()];
-    //             if (selectedTab === undefined) {
-    //                 debugger; // this should not happen!
-    //             }
-    //             tabComponents[child.getId()] = <Tab
-    //                 key={child.getId()}
-    //                 layout={this}
-    //                 node={child}
-    //                 selected={child === selectedTab}
-    //                 factory={this.props.factory}>
-    //             </Tab>;
-    //         }
-    //         else {// is row
-    //             // Unlike layout tabsets, floating tabsets won't support rows, only tabs, so we won't need to calculate them.
-    //         }
-    //     });
-    // }
-
     /** @hidden @internal */
     renderChildren(
         node: (RowNode | TabSetNode),
