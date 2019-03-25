@@ -360,6 +360,7 @@ class Model {
         rect = this._borderRects.inner.removeInsets(this._getAttribute("marginInsets"));
 
         (this._root as RowNode)._layout(rect);
+        (this._floating as FloatingNode)._layout(rect);
         return rect;
         //console.log("layout time: " + (Date.now() - start));
     }

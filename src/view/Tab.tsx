@@ -55,12 +55,10 @@ export class Tab extends React.Component<ITabProps, any> {
             display: this.props.selected ? "block" : "none"
         });
 
-        if (parentNode.getTop() && parentNode.getLeft()) {
-            style.top = `calc(${parentNode.getTop()}px + ${style.top})`;
-            style.left = `calc(${parentNode.getLeft()}px + ${style.left})`;
-            style.width = `${parentNode.getWidth()}px`;
-            style.height = `${parentNode.getHeight()}px`;
-            style.zIndex = 100;
+        if (parentNode instanceof TabSetNode) {
+            if (parentNode.getTop() && parentNode.getLeft()) {
+                style.zIndex = 100;
+            }
         }
 
         if (parentNode.isMaximized()) {

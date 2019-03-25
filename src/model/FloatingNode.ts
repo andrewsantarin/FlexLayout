@@ -28,10 +28,19 @@ class FloatingNode extends Node implements IDropTarget{
 
     /** @hidden @internal */
     _layout(rect: Rect) {
-        // TODO
         super._layout(rect);
 
-        // const drawChildren = this._getDrawChildren();
+        const drawChildren = this._getDrawChildren() as Array<TabSetNode>;
+
+        // layout children
+        drawChildren.forEach((child) => {
+            const x = child.getLeft() || 0;
+            const y = child.getTop() || 0;
+            const width = child.getWidth() || 0;
+            const height = child.getHeight() || 0;
+
+            child._layout(new Rect(x, y, width, height));
+        });
 
         return true;
     }
