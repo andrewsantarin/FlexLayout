@@ -45,6 +45,9 @@ class DockLocation {
 
     /** @hidden @internal */
     static getLocation(rect: Rect, x: number, y: number) {
+        // Set the maximum non-edge dock location to 40px
+        // so that the free floating tabsets have a lot of
+        // space to move around freely.
         if (x < rect.x + Math.min(rect.width / 4, 40)) {
             let dockLocation = DockLocation.LEFT;
             dockLocation.x = x;
