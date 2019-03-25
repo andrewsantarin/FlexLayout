@@ -45,28 +45,28 @@ class DockLocation {
 
     /** @hidden @internal */
     static getLocation(rect: Rect, x: number, y: number) {
-        if (x < rect.x + rect.width / 4) {
+        if (x < rect.x + Math.min(rect.width / 4, 40)) {
             let dockLocation = DockLocation.LEFT;
             dockLocation.x = x;
             dockLocation.y = y;
             return dockLocation;
         }
 
-        else if (x > rect.getRight() - rect.width / 4) {
+        else if (x > rect.getRight() - Math.min(rect.width / 4, 40)) {
             let dockLocation = DockLocation.RIGHT;
             dockLocation.x = x;
             dockLocation.y = y;
             return dockLocation;
         }
 
-        else if (y < rect.y + rect.height / 4) {
+        else if (y < rect.y + Math.min(rect.height / 4, 40)) {
             let dockLocation = DockLocation.TOP;
             dockLocation.x = x;
             dockLocation.y = y;
             return dockLocation;
         }
 
-        else if (y > rect.getBottom() - rect.height / 4) {
+        else if (y > rect.getBottom() - Math.min(rect.height / 4, 40)) {
             let dockLocation = DockLocation.BOTTOM;
             dockLocation.x = x;
             dockLocation.y = y;
