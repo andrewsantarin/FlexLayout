@@ -65,12 +65,12 @@ class TabSetNode extends Node implements IDraggable, IDropTarget {
         return this._getAttributeAsNumberOrUndefined("height");
     }
 
-    getTop() {
-        return this._getAttributeAsNumberOrUndefined("top");
+    getX() {
+        return this._getAttributeAsNumberOrUndefined("x");
     }
 
-    getLeft() {
-        return this._getAttributeAsNumberOrUndefined("left");
+    getY() {
+        return this._getAttributeAsNumberOrUndefined("y");
     }
 
     isMaximized() {
@@ -127,13 +127,13 @@ class TabSetNode extends Node implements IDraggable, IDropTarget {
     }
 
     /** @hidden @internal */
-    _setTop(top: number) {
-        this._attributes["top"] = top;
+    _setX(x: number) {
+        this._attributes["x"] = x;
     }
 
     /** @hidden @internal */
-    _setLeft(left: number) {
-        this._attributes["left"] = left;
+    _setY(y: number) {
+        this._attributes["y"] = y;
     }
 
     /** @hidden @internal */
@@ -296,8 +296,8 @@ class TabSetNode extends Node implements IDraggable, IDropTarget {
                 tabSet = dragNode as TabSetNode;
             }
 
-            tabSet._setLeft(dockLocation.x);
-            tabSet._setTop(dockLocation.y);
+            tabSet._setX(dockLocation.x);
+            tabSet._setY(dockLocation.y);
             tabSet._setWidth(480);
             tabSet._setHeight(360);
             tabSet._setRect(new Rect(dockLocation.x, dockLocation.y, 480, 360));
@@ -443,8 +443,8 @@ class TabSetNode extends Node implements IDraggable, IDropTarget {
         attributeDefinitions.add("id", undefined).setType(Attribute.ID);
 
         attributeDefinitions.add("weight", 100);
-        attributeDefinitions.add("top", undefined);
-        attributeDefinitions.add("left", undefined);
+        attributeDefinitions.add("x", undefined);
+        attributeDefinitions.add("y", undefined);
         attributeDefinitions.add("width", undefined);
         attributeDefinitions.add("height", undefined);
         attributeDefinitions.add("selected", 0);

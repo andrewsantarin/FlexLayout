@@ -81,7 +81,7 @@ export class TabSet extends React.Component<ITabSetProps, any> {
         const node = this.props.node;
         const style = node._styleWithPosition();
 
-        if (node.getTop() && node.getLeft()) {
+        if (node.getX() && node.getY()) {
             style.zIndex = 100;
         }
 

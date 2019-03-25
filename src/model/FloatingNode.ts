@@ -34,8 +34,8 @@ class FloatingNode extends Node implements IDropTarget{
 
         // layout children
         drawChildren.forEach((child) => {
-            const x = child.getLeft() || 0;
-            const y = child.getTop() || 0;
+            const x = child.getX() || 0;
+            const y = child.getY() || 0;
             const width = child.getWidth() || 0;
             const height = child.getHeight() || 0;
 

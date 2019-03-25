@@ -39,7 +39,10 @@
     "children": [
       {
         "type": "tabset",
-        "weight": 25,
+        "x": 100,
+        "y": 25,
+        "width": 300,
+        "height": 400,
         "id": "#10001",
         "children": [
           {

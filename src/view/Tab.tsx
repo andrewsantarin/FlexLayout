@@ -56,7 +56,7 @@ export class Tab extends React.Component<ITabProps, any> {
         });
 
         if (parentNode instanceof TabSetNode) {
-            if (parentNode.getTop() && parentNode.getLeft()) {
+            if (parentNode.getX() && parentNode.getY()) {
                 style.zIndex = 100;
             }
         }
