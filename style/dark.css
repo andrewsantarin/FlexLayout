@@ -73,6 +73,10 @@
     box-sizing: border-box;
 }
 
+.flexlayout__floating {
+    position: absolute;
+}
+
 .flexlayout__tab {
     overflow: auto;
     position:absolute;
