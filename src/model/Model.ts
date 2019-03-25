@@ -378,7 +378,7 @@ class Model {
     _tidy() {
         //console.log("before _tidy", this.toString());
         (this._root as RowNode)._tidy();
-        // (this._floating as FloatingNode)._tidy();
+        (this._floating as FloatingNode)._tidy();
         //console.log("after _tidy", this.toString());
     }
 
