@@ -302,14 +302,10 @@ class TabSetNode extends Node implements IDraggable, IDropTarget {
             tabSet._setHeight(360);
             tabSet._setRect(new Rect(dockLocation.x, dockLocation.y, 480, 360));
 
-            // const parent = dragNode.getParent() as Node;
-            // const pos = parent.getChildren().indexOf(this);
-
             // create a tabset in the free-floating space.
             const floatingNode: FloatingNode = this._model.getFloatingRoot();
             const pos = floatingNode.getChildren().length;
             floatingNode._addChild(tabSet, pos);
-            // parent._removeChild(dragNode);
 
             this._model._setActiveTabset(tabSet);
         }
