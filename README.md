@@ -160,7 +160,7 @@ The `<Layout>` component renders the tabsets and splitters, it takes the followi
 | ------------- |:-------------:| -----|
 | model    | required | the layout model  |
 | factory      | required | a factory function for creating React components |
-| onAction | optional     |  function called whenever the layout generates an action to update the model (allows for intercepting actions before they are dispatched to the model, for example, asking the user to confirm a tab close) |
+| onAction | optional     |  function called whenever the layout generates an action to update the model (allows for intercepting actions before they are dispatched to the model, e.g.: asking the user to confirm a tab close) |
 | onRenderTab | optional     |  function called when rendering a tab, allows leading (icon) and content sections to be customized |
 | onRenderTabSet | optional     |  function called when rendering a tabset, allows header and buttons to be customized |
 | onModelChange | optional     |  function called when model has changed  |
@@ -189,7 +189,7 @@ Consider this typical use case and its implementation code below:
 - You also want yet another set of panels which contain docked tabs on all four sides of your main layout.
 
 ```javascript
-var json = {
+const json = {
   global: {},
   layout: { // Required
     type: "row", // Also required.
@@ -316,6 +316,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import FlexLayout from "flexlayout-react";
 
+// Let's assume that the example configuration above is what we want.
 import MAIN_LAYOUT_JSON from "./main.layout.json";
 
 class Main extends React.Component {
@@ -421,9 +422,9 @@ class Main extends Component {
 }
 ```
 
-By changing global or node attributes you can change the layout appearance and behavior, for example:
+By changing global or node attributes you can change the layout appearance and behavior.
 
-Setting `tabSetEnableTabStrip` to `false` in the global options would change the layout into a multi-splitter (without
+For example, setting `tabSetEnableTabStrip` to `false` in the global options would change the layout into a multi-splitter (without
 tabs or drag and drop).
 
 ```json
@@ -554,9 +555,7 @@ Inherited defaults will take their value from the associated global attributes (
 
 ## Model Actions
 
-All changes to the model are applied through actions. You can intercept actions resulting from GUI changes before they are applied by
-implementing the `onAction` callback property of the `<Layout>` component. You can also apply actions directly using the `Model.doAction()`
-method.
+All changes to the model are applied through actions. You can intercept actions resulting from GUI changes before they are applied by implementing the `onAction` callback property of the `<Layout>` component. You can also apply actions directly using the `Model.doAction()` method.
 
 # Example
 
@@ -568,8 +567,7 @@ model.doAction(Actions.updateModelAttributes({
 }));
 ```
 
-The above example would increase the size of the splitters, tabset headers and tabs, this could be used to make
-adjusting the layout easier on a small device.
+The above example would increase the size of the splitters, tabset headers and tabs. This could be used to make adjusting the layout easier on a small device.
 
 
 | Action Creator | Description  |
@@ -585,11 +583,11 @@ adjusting the layout easier on a small device.
 |	Actions.updateNodeAttributes(nodeId, attributes) | updates the attributes of the given node |
 |	Actions.adjustBorderSplit(borderNodeId, pos) | updates the size of the given border node |
 
-for example:
+Example:
 
 ```javascript
 model.doAction(Actions.addNode(
-  {
+  { // Your new tab.
     type: "tab",
     component: "grid",
     name: "a grid",
@@ -600,21 +598,22 @@ model.doAction(Actions.addNode(
   0
 ));
 ```
-This would add a new grid component to the center of tabset with id "1" and at the `0`'th tab position (use value `-1` to add to the end of the tabs).
+
+This code would add a new grid component to the center of tabset with id "1" and at the `0`'th tab position (use value `-1` to add to the end of the tabs).
 
 **Note:** You can get the `id` of a node using the method `node.getId()`. If an `id` wasn't assigned when the node was created, then one will be created for you of the form #\<next_available_id\> (e.g. #1, #2 ...).
 
 
 ## Layout Component Methods to Create New Tabs
 
-Methods on the Layout Component for adding tabs, the tabs are specified by their layout json.
+Methods on the Layout Component for adding tabs. The tabs are specified by their layout configuration in json.
 
 Example:
 
 ```javascript
 this.refs.layout.addTabToTabSet(
   "NAVIGATION",
-  {
+  { // Your new tab.
     type: "tab",
     component: "grid",
     name: "a grid"
@@ -628,8 +627,8 @@ This would add a new grid component to the tabset with id "NAVIGATION".
 | ------------- | -----|
 | addTabToTabSet(tabsetId, json) | adds a new tab to the tabset with the given id |
 | addTabToActiveTabSet(json) | adds a new tab to the active tabset |
-| addTabWithDragAndDrop(dragText, json, onDrop) | adds a new tab by dragging a marker to the required location, the drag starts immediately |
-| addTabWithDragAndDropIndirect(dragText, json, onDrop) | adds a new tab by dragging a marker to the required location, the marker is shown and must be clicked on to start dragging |
+| addTabWithDragAndDrop(dragText, json, onDrop) | adds a new tab by dragging a marker to the required location; the drag takes effect immediately |
+| addTabWithDragAndDropIndirect(dragText, json, onDrop) | adds a new tab by dragging a marker to the required location; the marker is shown and must be clicked on to start dragging |
 
 ## Tab Node Events
 
