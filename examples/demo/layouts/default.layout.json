@@ -95,12 +95,25 @@
   "borders": [
     {
       "type": "border",
-      "location": "left",
+      "location": "top",
       "children": [
         {
           "type": "tab",
           "enableClose": false,
           "name": "Navigation",
+          "component": "grid",
+          "id": "#23"
+        }
+      ]
+    },
+    {
+      "type": "border",
+      "location": "left",
+      "children": [
+        {
+          "type": "tab",
+          "enableClose": false,
+          "name": "Views",
           "component": "grid",
           "id": "#24"
         }
