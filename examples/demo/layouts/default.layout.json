@@ -39,17 +39,54 @@
     "children": [
       {
         "type": "tabset",
-        "x": 100,
-        "y": 25,
+        "x": 75,
+        "y": 230,
         "width": 300,
         "height": 400,
         "id": "#10001",
         "children": [
           {
             "type": "tab",
-            "name": "Float",
+            "name": "A wild floating tab appears!",
+            "component": "text",
+            "id": "#10002",
+            "config": {
+              "text": "What will you do?"
+            }
+          }
+        ]
+      },
+      {
+        "type": "tabset",
+        "x": 100,
+        "y": 25,
+        "width": 600,
+        "height": 480,
+        "id": "#10003",
+        "children": [
+          {
+            "type": "tab",
+            "name": "It: FlexLayout Chronicles",
+            "component": "text",
+            "id": "#10004",
+            "config": {
+              "text": "Don't you want your tab back, Flexie?"
+            }
+          },
+          {
+            "type": "tab",
+            "component": "text",
+            "id": "#10005",
+            "name": "It: FlexLayout Chronicles: The Floating",
+            "config": {
+              "text": "This'll float, too."
+            }
+          },
+          {
+            "type": "tab",
+            "name": "FX 2",
             "component": "grid",
-            "id": "#10002"
+            "id": "#10006"
           }
         ]
       }
