@@ -1,6 +1,6 @@
 # FlexLayout Extended
 
-FlexLayout (extended) is a layout manager that arranges React components in multiple tab sets, these can be resized and moved.
+This fork extends the existing `flexlayout-react` library with additional features.
 
 ------------
 ## Notes from the Contributor
@@ -11,7 +11,8 @@ Terrible joke, I know.
 
 To put it simply: It's a version of `FlexLayout` (a.k.a. [`flexlayout-react`](https://www.npmjs.com/package/flexlayout-react) on NPM) which is still very much a work in progress. Currenly, I'm developing a feature which will support docking & undocking of tabs.
 
-See my Imgur upload (https://i.imgur.com/Qs2ohCQ.png) for a rough prototype screenshot.
+![FlexLayout Demo Screenshot](https://i.imgur.com/Qs2ohCQ.png "FlexLayout Demo Screenshot")
+See my Imgur upload (https://i.imgur.com/Qs2ohCQ.png) for a rough prototype idea of what this extension intends to do.
 
 ### Premise and Objective
 If you're in dire need of a React.js library that supports tabsets which can both be separated on the grid and float freely one the screen, then this extended library is most likely for you.
@@ -19,24 +20,31 @@ If you're in dire need of a React.js library that supports tabsets which can bot
 The library extension was built for an upcoming product at my full-time job, actually. There are a lot of amazing libraries out there which support dock-like features in the browser, two of which are built specifically for React (this library is one of them!):
 
 - https://github.com/caplin/FlexLayout ([demo](https://rawgit.com/caplin/FlexLayout/demos/demos/v0.30/demo/index.html))
-  you're looking at it right now
+
+  You're looking at it (or rather, its extension) right now.
 
 - https://github.com/golden-layout/golden-layout ([demo](http://golden-layout.com))
+
   jQuery dependent, even if you use React.js
 
 - https://github.com/nomcopter/react-mosaic ([demo](https://nomcopter.github.io/react-mosaic))
-  it integrates with https://github.com/palantir/blueprint (`react-mosaic` was formerly https://github.com/palantir/react-mosaic; same author!) if you want to use that UI toolkit, really cool; its docking API -- not so much.
+
+  It integrates with https://github.com/palantir/blueprint (`react-mosaic` was formerly https://github.com/palantir/react-mosaic; same author!) if you want to use that UI toolkit, really cool; its docking API -- not so much.
 
 - https://github.com/WebCabin/wcDocker ([demo](http://docker.webcabin.org))
-  nice and all, but I can't find any React.js integration docs anywhere. also sadly jQuery-dependent, like `golden-layout`.
+
+  Nice and all, but I can't find any React.js integration docs anywhere. also sadly jQuery-dependent, like `golden-layout`.
 
 - https://github.com/coderespawn/dock-spawn ([demo](http://www.dockspawn.com/))
+
   Written in Dart. Not what I want.
 
 - https://github.com/phosphorjs/phosphor ([demo](http://phosphorjs.github.io/examples/dockpanel))
+
   Widget feels really snappy, but I'll have to write my project as a Phosphor.js project first as the main, then React.js in the underlying components. Not what I want.
 
 - [ExtJS `Ext.WindowManager`](https://docs.sencha.com/extjs/6.5.2/classic/Ext.WindowManager.html)
+
   My colleagues currently use this for **existing** projects only. Not what I want.
 
 In all of my findings, none of them (not even vanilla `FlexLayout`) are even this close to supporting the docking system for my needs: 
@@ -69,6 +77,12 @@ Replace the `wip/<the-wip-branch-name>` with any particular development branch I
 Once you run `npm start`, wait for the `webpack` bundler to finish, then open http://localhost:3000 on your local browser.
 
 ------------
+Normal docs continue below!
+
+------------
+# FlexLayout
+
+FlexLayout is a layout manager that arranges React components in multiple tab sets, these can be resized and moved.
 
 ![FlexLayout Demo Screenshot](/../screenshots/github_images/v0.20/demo1.png?raw=true "FlexLayout Demo Screenshot")
 
@@ -166,12 +180,17 @@ render() {
 }
 ```
 
-## Example Configuration:
+## Example Configuration
+
+Consider this typical use case and its implementation code below:
+
+- You want a main layout that has two groups of tabs, split evenly in the middle. 
+- You also want another tab to float freely over the main layout, which can be moved around at the user's discretion.
+- You also want yet another set of panels which contain docked tabs on all four sides of your main layout.
 
 ```javascript
 var json = {
 	global: {},
-	borders: [],
 	layout: { // Required
 		type: "row", // Also required.
 		weight: 100, // Also required.
@@ -230,7 +249,7 @@ var json = {
 		],
 	},
 	"borders": [ // Optional
-		// You can specify 4 borders in total across 4 sides.
+		// You can specify up to 4 borders in total across 4 sides.
 		// 1 border = 1 side
 		{
 			"type": "border",
@@ -325,9 +344,9 @@ class Main extends React.Component {
 ReactDOM.render(<Main/>, document.getElementById("container"));
 ```
 
-(See the examples for the full source code)
-
 The above code would render two tabsets horizontally each containing a single tab that hosts a button component. The tabs could be moved and resized by dragging and dropping. Additional grids could be added to the layout by sending actions to the model.
+
+If you're looking for more advanced implementations to exert additional control over your layout, [see our examples](./src/examples).
 
 Try it now using [JSFiddle](https://jsfiddle.net/9x6hecdw/1) 
 
@@ -337,7 +356,7 @@ The model revolves around 4 types of "node":
 
 * **row**
 
-  Rows contain a list of tabsets and child rows. The top level row will render horizontally, while child 'rows' will render in the opposite orientation to their parent. 
+  Rows contain a list of tabsets and child rows. The top level row will render horizontally, while child "rows" will render in the opposite orientation to their parent. 
   
   **Note:** Rows can't be nested in on `floating` and `border`.
 
@@ -375,7 +394,7 @@ The model json contains 4 top level elements:
 
 Weights on rows and tabsets specify the relative weight of these nodes within the parent row. The actual pixel values do not matter; their relative values will be calculated instead (i.e. two tabsets of weights `30`,`70` relative their parent element would render the same if they had weights of `3`,`7`).
 
-To control where nodes can be dropped, you can add a callback function to the model through JavaScript:
+To control where nodes can be dropped, you can add a callback function to the model:
 
 ```javascript
 model.setOnAllowDrop(this.allowDrop);
