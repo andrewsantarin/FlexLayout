@@ -176,7 +176,7 @@ The model can be created using the Model.fromJson(jsonObject) static method, and
 this.state = {model: FlexLayout.Model.fromJson(json)};
 
 render() {
-	<Layout model={this.state.model} factory={factory}/>
+  <Layout model={this.state.model} factory={factory}/>
 }
 ```
 
@@ -190,122 +190,122 @@ Consider this typical use case and its implementation code below:
 
 ```javascript
 var json = {
-	global: {},
-	layout: { // Required
-		type: "row", // Also required.
-		weight: 100, // Also required.
-		children: [
-			// Optional children elements.
-			// If you'd rather not have any elements on this layer, leave the "children" array empty.
-			{
-				type: "tabset",
-				weight: 50, // Not in pixels, but rather, a relative ratio between the children of the same parent.
-				selected: 0,
-				children: [
-					{
-						type: "tab",
-						name: "FX",
-						component: "grid",
-					}
-				],
-			},
-			{
-				type: "tabset",
-				weight: 50, // Not in pixels, but rather, a relative ratio between the children of the same parent.
-				selected: 0,
-				children: [
-					{
-						"type": "tab",
-						"name": "FI",
-						"component": "grid",
-					},
-				],
-			},
-		],
-	},
-	floating: { // Required
-		type: "floating", // Also required.
-		children: [ 	  // Also required.
-			// Optional children elements.
-			// If you'd rather not have any elements on this layer, leave the "children" array empty.
-			// You may only nest tabsets up to 1 level from the floating element.
-			{
-				type: "tabset",
-				// Use the following on the tabset instead of "weight".
-				x: 125,			// From the topmost pixel of the layout root element.
-				y: 250,			// From the leftmost pixel of the layout root element.
-				width: 600,		// Initial pixel width of the child element.
-				height: 480,	// Initial pixel height of the child element.
-				// ------------ //
-				selected: 0,
-				children: [
-					{
-						type: "tab",
-						name: "FX",
-						component: "grid",
-					},
-				],
-			},
-		],
-	},
-	"borders": [ // Optional
-		// You can specify up to 4 borders in total across 4 sides.
-		// 1 border = 1 side
-		{
-			"type": "border",
-			"location": "top",
-			"children": [
-				{
-					"type": "tab",
-					"enableClose": false,
-					"name": "Navigation",
-					"component": "grid"
-				}
-			]
-		},
-		{
-			"type": "border",
-			"location": "left",
-			"children": [
-				{
-					"type": "tab",
-					"enableClose": false,
-					"name": "Views",
-					"component": "grid"
-				}
-			]
-		},
-		{
-			"type": "border",
-			"location": "right",
-			"children": [
-				{
-					"type": "tab",
-					"enableClose": false,
-					"name": "Options",
-					"component": "grid"
-				}
-			]
-		},
-		{
-			"type": "border",
-			"location": "bottom",
-			"children": [
-				{
-					"type": "tab",
-					"enableClose": false,
-					"name": "Activity Blotter",
-					"component": "grid"
-				},
-				{
-					"type": "tab",
-					"enableClose": false,
-					"name": "Execution Blotter",
-					"component": "grid"
-				}
-			]
-		}
-	]
+  global: {},
+  layout: { // Required
+    type: "row", // Also required.
+    weight: 100, // Also required.
+    children: [
+      // Optional children elements.
+      // If you'd rather not have any elements on this layer, leave the "children" array empty.
+      {
+        type: "tabset",
+        weight: 50, // Not in pixels, but rather, a relative ratio between the children of the same parent.
+        selected: 0,
+        children: [
+          {
+            type: "tab",
+            name: "FX",
+            component: "grid",
+          }
+        ],
+      },
+      {
+        type: "tabset",
+        weight: 50, // Not in pixels, but rather, a relative ratio between the children of the same parent.
+        selected: 0,
+        children: [
+          {
+            "type": "tab",
+            "name": "FI",
+            "component": "grid",
+          },
+        ],
+      },
+    ],
+  },
+  floating: { // Required
+    type: "floating", // Also required.
+    children: [ 	  // Also required.
+      // Optional children elements.
+      // If you'd rather not have any elements on this layer, leave the "children" array empty.
+      // You may only nest tabsets up to 1 level from the floating element.
+      {
+        type: "tabset",
+        // Use the following on the tabset instead of "weight".
+        x: 125,			// From the topmost pixel of the layout root element.
+        y: 250,			// From the leftmost pixel of the layout root element.
+        width: 600,		// Initial pixel width of the child element.
+        height: 480,	// Initial pixel height of the child element.
+        // ------------ //
+        selected: 0,
+        children: [
+          {
+            type: "tab",
+            name: "FX",
+            component: "grid",
+          },
+        ],
+      },
+    ],
+  },
+  "borders": [ // Optional
+    // You can specify up to 4 borders in total across 4 sides.
+    // 1 border = 1 side
+    {
+      "type": "border",
+      "location": "top",
+      "children": [
+        {
+          "type": "tab",
+          "enableClose": false,
+          "name": "Navigation",
+          "component": "grid"
+        }
+      ]
+    },
+    {
+      "type": "border",
+      "location": "left",
+      "children": [
+        {
+          "type": "tab",
+          "enableClose": false,
+          "name": "Views",
+          "component": "grid"
+        }
+      ]
+    },
+    {
+      "type": "border",
+      "location": "right",
+      "children": [
+        {
+          "type": "tab",
+          "enableClose": false,
+          "name": "Options",
+          "component": "grid"
+        }
+      ]
+    },
+    {
+      "type": "border",
+      "location": "bottom",
+      "children": [
+        {
+          "type": "tab",
+          "enableClose": false,
+          "name": "Activity Blotter",
+          "component": "grid"
+        },
+        {
+          "type": "tab",
+          "enableClose": false,
+          "name": "Execution Blotter",
+          "component": "grid"
+        }
+      ]
+    }
+  ]
 };
 ```
 
@@ -319,26 +319,26 @@ import FlexLayout from "flexlayout-react";
 import MAIN_LAYOUT_JSON from "./main.layout.json";
 
 class Main extends React.Component {
-    constructor(props) {
-		super(props);
+  constructor(props) {
+    super(props);
 
-        this.state = {
-			model: FlexLayout.Model.fromJson(MAIN_LAYOUT_JSON),
-		};
-    }
+    this.state = {
+      model: FlexLayout.Model.fromJson(MAIN_LAYOUT_JSON),
+    };
+  }
 
-    factory = (node) => {
-        var component = node.getComponent();
-        if (component === "button") {
-            return <button>{node.getName()}</button>;
-        }
+  factory = (node) => {
+    const component = node.getComponent();
+    if (component === "button") {
+      return <button>{node.getName()}</button>;
     }
+  }
 
-    render() {
-        return (
-            <FlexLayout.Layout model={this.state.model} factory={this.factory}/>
-        )
-    }
+  render() {
+    return (
+      <FlexLayout.Layout model={this.state.model} factory={this.factory}/>
+    )
+  }
 }
 
 ReactDOM.render(<Main/>, document.getElementById("container"));
@@ -403,19 +403,21 @@ model.setOnAllowDrop(this.allowDrop);
 Example:
 ```javascript
 class Main extends Component {
-	allowDrop = (dragNode, dropInfo) => {
-        let dropNode = dropInfo.node;
+  allowDrop = (dragNode, dropInfo) => {
+    let dropNode = dropInfo.node;
 
-        // prevent non-border tabs dropping into borders
-        if (dropNode.getType() == "border" && (dragNode.getParent() == null || dragNode.getParent().getType() != "border"))
-            return false;
-
-        // prevent border tabs dropping into main layout
-        if (dropNode.getType() != "border" && (dragNode.getParent() != null && dragNode.getParent().getType() == "border"))
-            return false;
-
-        return true;
+    // prevent non-border tabs dropping into borders
+    if (dropNode.getType() == "border" && (dragNode.getParent() == null || dragNode.getParent().getType() != "border")) {
+      return false;
     }
+
+    // prevent border tabs dropping into main layout
+    if (dropNode.getType() != "border" && (dragNode.getParent() != null && dragNode.getParent().getType() == "border")) {
+      return false;
+    }
+
+    return true;
+  }
 }
 ```
 
@@ -426,9 +428,9 @@ tabs or drag and drop).
 
 ```json
 {
-	"global": {
-		"tabSetEnableTabStrip": false
-	}
+  "global": {
+    "tabSetEnableTabStrip": false
+  }
 }
 ```
 
@@ -560,9 +562,9 @@ method.
 
 ```javascript
 model.doAction(Actions.updateModelAttributes({
-	splitterSize: 40,
-	tabSetHeaderHeight: 40,
-	tabSetTabStripHeight: 40
+  splitterSize: 40,
+  tabSetHeaderHeight: 40,
+  tabSetTabStripHeight: 40
 }));
 ```
 
@@ -587,15 +589,15 @@ for example:
 
 ```javascript
 model.doAction(Actions.addNode(
-	{
-		type: "tab",
-		component: "grid",
-		name: "a grid",
-		id: "5"
-	},
-	"1",
-	DropLocation.CENTER,
-	0
+  {
+    type: "tab",
+    component: "grid",
+    name: "a grid",
+    id: "5"
+  },
+  "1",
+  DropLocation.CENTER,
+  0
 ));
 ```
 This would add a new grid component to the center of tabset with id "1" and at the `0`'th tab position (use value `-1` to add to the end of the tabs).
@@ -611,12 +613,12 @@ Example:
 
 ```javascript
 this.refs.layout.addTabToTabSet(
-	"NAVIGATION",
-	{
-		type: "tab",
-		component: "grid",
-		name: "a grid"
-	}
+  "NAVIGATION",
+  {
+    type: "tab",
+    component: "grid",
+    name: "a grid"
+  }
 );
 ```
 This would add a new grid component to the tabset with id "NAVIGATION".
@@ -636,15 +638,15 @@ You can handle events on nodes by adding a listener. This would typically be don
 Example:
 ```javascript
 class Main extends Component {
-    constructor(props) {
-        super(props);
-        let config = this.props.node.getConfig();
+  constructor(props) {
+    super(props);
+    let config = this.props.node.getConfig();
 
-        // save state in flexlayout node tree
-        this.props.node.setEventListener("save", function (p) {
-             config.subject = this.subject;
-        }.bind(this));
-    }
+    // save state in flexlayout node tree
+    this.props.node.setEventListener("save", function (p) {
+      config.subject = this.subject;
+    }.bind(this));
+  }
 }
 ```
 
