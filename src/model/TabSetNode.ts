@@ -195,7 +195,7 @@ class TabSetNode extends Node implements IDraggable, IDropTarget {
             let outlineRect = this._tabHeaderRect;
             dropInfo = new DropInfo(this, outlineRect!, dockLocation, -1, "flexlayout__outline_rect");
         }
-        else if (this._contentRect!.contains(x, y)) {
+        else if (!(this._parent instanceof FloatingNode) && this._contentRect!.contains(x, y)) {
             let dockLocation = DockLocation.getLocation(this._contentRect!, x, y);
             const isDockedToCenterLocation = dockLocation === DockLocation.CENTER;
             let outlineRect = !isDockedToCenterLocation ? dockLocation.getDockRect(this._rect) : new Rect(x, y, 0, 0);
