@@ -155,7 +155,6 @@ Dark:
 
 The `<Layout>` component renders the tabsets and splitters, it takes the following props:
 
-
 | Prop       | Required/Optional           | Description  |
 | ------------- |:-------------:| -----|
 | model    | required | the layout model  |
@@ -439,7 +438,6 @@ tabs or drag and drop).
 
 Attributes allowed in the `global` element
 
-
 | Attribute | Default | Description  |
 | ------------- |:-------------:| -----|
 | splitterSize | `8` | |
@@ -510,7 +508,6 @@ Inherited defaults will take their value from the associated global attributes (
 
 **Note**: tabsets can be dynamically created as tabs are moved and deleted when all their tabs are removed (unless `enableDeleteWhenEmpty` is `false`).
 
-
 | Attribute | Default | Description  |
 | ------------- |:-------------:| -----|
 | type | `"tabset"` | |
@@ -568,7 +565,6 @@ model.doAction(Actions.updateModelAttributes({
 ```
 
 The above example would increase the size of the splitters, tabset headers and tabs. This could be used to make adjusting the layout easier on a small device.
-
 
 | Action Creator | Description  |
 | ------------- | -----|
