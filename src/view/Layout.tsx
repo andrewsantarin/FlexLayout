@@ -234,8 +234,8 @@ export class Layout extends React.Component<ILayoutProps, any> {
     renderFloating(node: FloatingNode) {
         const drawChildren = (node._getDrawChildren() as Array<TabSetNode>);
         const floating = drawChildren.map((tabSetNode, i) => {
-            const tabSetActive = tabSetNode.isActive();
             const tabSetNodeId = tabSetNode.getId();
+            const tabSetActive = tabSetNode.isActive();
             const zIndex = (tabSetActive ? drawChildren.length + 1 : i) * 5;
 
             return (

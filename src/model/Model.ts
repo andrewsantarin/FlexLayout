@@ -364,7 +364,14 @@ class Model {
 
     /** @hidden @internal */
     _findDropTargetNode(dragNode: (Node & IDraggable), x: number, y: number) {
-        let node = (this._root as RowNode)._findDropTargetNode(dragNode, x, y);
+        // Scan the droppable space for any matching floating tabsets first at the "can drop" location.
+        let node = (this._floating as FloatingNode)._findDropTargetNode(dragNode, x, y);
+        if (node !== undefined) {
+            return node;
+        }
+
+        // When no floating tabsets match, scan the grid space for any matching tabsets.
+        node = (this._root as RowNode)._findDropTargetNode(dragNode, x, y);
         if (node === undefined) {
             node = this._borders._findDropTargetNode(dragNode, x, y);
         }

@@ -90,20 +90,10 @@ class FloatingNode extends Node implements IDropTarget{
 
     /** @hidden @internal */
     canDrop(dragNode: (Node & IDraggable), x: number, y: number): DropInfo | undefined {
-        let dropInfo = undefined;
-        
-        let dockLocation = DockLocation.getLocation(this._rect, x, y);
-        let outlineRect = dockLocation.getDockRect(this._rect);
-
-        dropInfo = new DropInfo(this, outlineRect, dockLocation, -1, "flexlayout__outline_rect");
-
-        if (dropInfo !== undefined) {
-            if (!dragNode._canDockInto(dragNode, dropInfo)) {
-                return undefined;
-            }
-        }
-
-        return dropInfo;
+        // Don't actually do anything here.
+        // Instead, delegate the .canDrop() calculations to its child elements through the following function:
+        // Model model._findDropTargetNode((Node & IDraggable) dragNode, number x, number y)
+        return undefined;
     }
 
     /** @hidden @internal */
