@@ -73,6 +73,11 @@
     box-sizing: border-box;
 }
 
+.flexlayout__floating > .flexlayout__tabset {
+    border-radius: 5px;
+    box-shadow: 2px 2px 4px #000;
+}
+
 .flexlayout__floating {
     position: absolute;
 }
