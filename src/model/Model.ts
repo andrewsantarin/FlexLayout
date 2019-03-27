@@ -494,6 +494,11 @@ class Model {
         attributeDefinitions.add("borderBarSize", 25);
         attributeDefinitions.add("borderEnableDrop", true).setType(Attribute.BOOLEAN);
         attributeDefinitions.add("borderClassName", undefined).setType(Attribute.STRING);
+
+        // floating tabset
+        attributeDefinitions.add("minFloatingTabsetWidth", 300).setType(Attribute.NUMBER);
+        attributeDefinitions.add("minFloatingTabsetHeight", 150).setType(Attribute.NUMBER);
+
         return attributeDefinitions;
     }
 }
