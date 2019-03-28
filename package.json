@@ -1,7 +1,7 @@
 {
   "name": "@andrewsantarin/extended-flexlayout-react",
   "version": "0.4.0-alpha.1",
-  "description": "A multi-tab layout manager",
+  "description": "A multi-tab layout manager with extended functionality",
   "main": "lib/index.js",
   "types": "./declarations/index.d.ts",
   "scripts": {
