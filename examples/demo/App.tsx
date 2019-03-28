@@ -2,6 +2,7 @@ import * as React from "react";
 
 import * as FlexLayout from "../../src/index";
 import Utils from "./Utils";
+import SimpleTable from "./SimpleTable";
 import { Node, TabSetNode, TabNode, DropInfo, BorderNode } from "../../src/index";
 
 var fields = ["Name", "ISIN", "Bid", "Ask", "Last", "Yield"];
@@ -237,30 +238,5 @@ export default class App extends React.Component<any, { layoutFile: string | nul
         }
 
         return a.join("");
-    }
-}
-
-class SimpleTable extends React.Component<{ fields: any, data: any, onClick: any }, any> {
-    shouldComponentUpdate() {
-        return true;
-    }
-
-    render() {
-        var headercells = this.props.fields.map(function (field:any) {
-            return <th key={field}>{field}</th>;
-        });
-
-        var rows = [];
-        for (var i = 0; i < this.props.data.length; i++) {
-            var row = this.props.fields.map((field:any) => <td key={field}>{this.props.data[i][field]}</td>);
-            rows.push(<tr key={i}>{row}</tr>);
-        }
-
-        return <table className="simple_table" onClick={this.props.onClick}>
-            <tbody>
-                <tr>{headercells}</tr>
-                {rows}
-            </tbody>
-        </table>;
     }
 }
