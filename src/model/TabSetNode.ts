@@ -12,7 +12,7 @@ import Orientation from "../Orientation";
 import IDraggable from "./IDraggable";
 import IDropTarget from "./IDropTarget";
 
-class TabSetNode extends Node implements IDraggable, IDropTarget{
+class TabSetNode extends Node implements IDraggable, IDropTarget {
     public static readonly TYPE = "tabset";
     /** @hidden @internal */
     private static _attributeDefinitions: AttributeDefinitions = TabSetNode._createAttributeDefinitions();
@@ -21,6 +21,8 @@ class TabSetNode extends Node implements IDraggable, IDropTarget{
     private _contentRect?: Rect;
     /** @hidden @internal */
     private _tabHeaderRect?: Rect;
+    // /** @hidden @internal */
+    // private _outlineTabHeaderWidth: number = 100;
 
     /** @hidden @internal */
     constructor(model: Model, json: any) {
@@ -131,8 +133,13 @@ class TabSetNode extends Node implements IDraggable, IDropTarget{
         }
         else if (this._contentRect!.contains(x, y)) {
             let dockLocation = DockLocation.getLocation(this._contentRect!, x, y);
-            let outlineRect = dockLocation.getDockRect(this._rect);
-            dropInfo = new DropInfo(this, outlineRect, dockLocation, -1, "flexlayout__outline_rect");
+            const isDockedToCenterLocation = dockLocation === DockLocation.CENTER;
+            let outlineRect = !isDockedToCenterLocation ? dockLocation.getDockRect(this._rect) : new Rect(x, y, 0, 0);
+            let className = [
+                'flexlayout__outline_rect',
+                isDockedToCenterLocation ? `flexlayout__outline_rect${isDockedToCenterLocation ? '--hidden' : ''}` : '',
+            ].filter(str => str).join(' ');
+            dropInfo = new DropInfo(this, outlineRect, dockLocation, -1, className);
         }
         else if (this._children.length > 0 && this._tabHeaderRect != undefined && this._tabHeaderRect.contains(x, y)) {
             let child = this._children[0] as TabNode;
@@ -146,16 +153,20 @@ class TabSetNode extends Node implements IDraggable, IDropTarget{
                 r = child.getTabRect()!;
                 childCenter = r.x + r.width / 2;
                 if (x >= p && x < childCenter) {
-                    let dockLocation = DockLocation.CENTER;
+                    let dockLocation = DockLocation.HEADER;
                     let outlineRect = new Rect(r.x - 2, yy, 3, h);
+                    // TODO: find out how to add better tactile feedback with tabs. Right now, it's just too narrow.
+                    // outlineRect = new Rect(r.x - 2, yy, this._outlineTabHeaderWidth, h);
                     dropInfo = new DropInfo(this, outlineRect, dockLocation, i, "flexlayout__outline_rect");
                     break;
                 }
                 p = childCenter;
             }
             if (dropInfo == undefined) {
-                let dockLocation = DockLocation.CENTER;
+                let dockLocation = DockLocation.HEADER;
                 let outlineRect = new Rect(r.getRight() - 2, yy, 3, h);
+                // TODO: find out how to add better tactile feedback with tabs. Right now, it's just too narrow.
+                // outlineRect = new Rect(r.getRight() - 2, yy, this._outlineTabHeaderWidth, h);
                 dropInfo = new DropInfo(this, outlineRect, dockLocation, this._children.length, "flexlayout__outline_rect");
             }
         }
@@ -246,7 +257,7 @@ class TabSetNode extends Node implements IDraggable, IDropTarget{
         }
 
         // simple_bundled dock to existing tabset
-        if (dockLocation === DockLocation.CENTER) {
+        if (dockLocation === DockLocation.CENTER || dockLocation === DockLocation.HEADER) {
             let insertPos = index;
             if (insertPos === -1) {
                 insertPos = this._children.length;
@@ -268,7 +279,7 @@ class TabSetNode extends Node implements IDraggable, IDropTarget{
 
         }
         else {
-            let tabSet: TabSetNode | undefined ;
+            let tabSet: TabSetNode | undefined;
             if (dragNode instanceof TabNode) {
                 // create new tabset parent
                 //console.log("create a new tabset");

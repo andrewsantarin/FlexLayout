@@ -10,6 +10,7 @@ class DockLocation {
     static LEFT = new DockLocation("left", Orientation.HORZ, 0);
     static RIGHT = new DockLocation("right", Orientation.HORZ, 1);
     static CENTER = new DockLocation("center", Orientation.VERT, 0);
+    static HEADER = new DockLocation("header", Orientation.VERT, 0);
 
     /** @hidden @internal */
     _name: string;
@@ -56,6 +57,7 @@ class DockLocation {
         else if (y > rect.getBottom() - rect.height / 4) {
             return DockLocation.BOTTOM;
         }
+
         else {
             return DockLocation.CENTER;
         }
