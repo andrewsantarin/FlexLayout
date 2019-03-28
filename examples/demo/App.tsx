@@ -83,7 +83,23 @@ export default class App extends React.Component<any, { layoutFile: string | nul
         if (this.state.model!.getMaximizedTabset() == null) {
             (this.refs.layout as FlexLayout.Layout).addTabWithDragAndDropIndirect("Add grid<br>(Drag to location)", {
                 component: "grid",
-                name: "a new grid"
+                name: "a new grid",
+            }, this.onAdded.bind(this));
+            this.setState({ adding: true });
+        }
+    }
+
+    onAddClickCustomSize(event: Event) {
+        if (this.state.model!.getMaximizedTabset() == null) {
+            (this.refs.layout as FlexLayout.Layout).addTabWithDragAndDropIndirect("Add (600 x 200)px grid if free floating<br>(Drag to location)", {
+                component: "grid",
+                name: "a new grid",
+                config: {
+                    tabset: { // Prefixed size
+                        width: 600,
+                        height: 200,
+                    },
+                },
             }, this.onAdded.bind(this));
             this.setState({ adding: true });
         }
@@ -116,7 +132,9 @@ export default class App extends React.Component<any, { layoutFile: string | nul
                 node.getExtraData().data = this.makeFakeData();
             }
 
-            return <SimpleTable fields={fields} onClick={this.onTableClick.bind(this, node)} data={node.getExtraData().data} />;
+            return <div className="floating__tab_content">
+                <SimpleTable fields={fields} onClick={this.onTableClick.bind(this, node)} data={node.getExtraData().data} />
+            </div>;
         }
         else if (component === "sub") {
             var model = node.getExtraData().model;
@@ -202,6 +220,7 @@ export default class App extends React.Component<any, { layoutFile: string | nul
                     <option value="trader">Trader</option>
                 </select>
                 <button onClick={this.onReloadFromFile.bind(this)}>reload from file</button>
+                <button disabled={this.state.adding} style={{ float: "right" }} onClick={this.onAddClickCustomSize.bind(this)}>Add (Component-Specific Tabset Size)</button>
                 <button disabled={this.state.adding} style={{ float: "right" }} onClick={this.onAddClick.bind(this)}>Add</button>
                 <button style={{ float: "right" }} onClick={this.onShowLayoutClick.bind(this)}>Show Layout JSON in Console</button>
                 <select style={{ float: "right" }} onChange={this.onThemeChange.bind(this)}>
