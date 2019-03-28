@@ -514,6 +514,8 @@ Inherited defaults will take their value from the associated global attributes (
 | weight | `100` | |
 | width | `null` | preferred pixel width |
 | height | `null` | preferred pixel height |
+| x | `null` | preferred pixel offset from the leftmost corner of the `<Layout>` container, equivalent of CSS `left` |
+| y | `null` | preferred pixel offset from the topmost corner of the `<Layout>` container, equivalent of CSS `top` |
 | name | `null` | named tabsets will show a header bar above the tabs |
 | selected | `0` | |
 | maximized | `false` | |
@@ -529,6 +531,10 @@ Inherited defaults will take their value from the associated global attributes (
 | enableTabStrip | *inherited* | |
 | headerHeight | *inherited* | |
 | tabStripHeight | *inherited* | |
+
+Tab set nodes will use certain positioning, size and relative split variables depending on where it has been nested: 
+- `weight` when nested inside `layout`
+- `width`, `height`, `x`, `y` when nested inside `floating`
 
 ## Border Attributes
 
