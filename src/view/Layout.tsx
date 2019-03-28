@@ -241,45 +241,6 @@ export class Layout extends React.Component<ILayoutProps, any> {
         }
     }
 
-    renderFloating(node: FloatingNode) {
-        const drawChildren = (node._getDrawChildren() as Array<TabSetNode>);
-        const floating = drawChildren.map((tabSetNode, i) => {
-            const tabSetNodeId = tabSetNode.getId();
-            const tabSetActive = tabSetNode.isActive();
-            const zIndex = (tabSetActive ? drawChildren.length + 1 : i) * 5;
-
-            return (
-                <div
-                    className="flexlayout__floating"
-                    key={tabSetNodeId}
-                    style={{ zIndex }}
-                >
-                    <TabSet
-                        key={tabSetNodeId}
-                        layout={this}
-                        node={tabSetNode}
-                    />
-                    {(tabSetNode.getChildren() as Array<TabNode>).map((tabNode) => {
-                        const tabNodeId = tabNode.getId();
-                        const selectedTabNode = tabSetNode.getChildren()[tabSetNode.getSelected()];
-
-                        return (
-                            <Tab
-                                key={tabNodeId}
-                                layout={this}
-                                node={tabNode}
-                                selected={tabNode === selectedTabNode}
-                                factory={this.props.factory}
-                            />
-                        );
-                    })}
-                </div>
-            );
-        });
-
-        return floating;
-    }
-
     /** @hidden @internal */
     handleResize = (tabSetNode: TabSetNode) => (event: MouseEvent | TouchEvent, direction: ResizableDirection, ref: HTMLDivElement, delta: ResizableDelta, coordinates: Position) => {
         const width = parseFloat(ref.style.width || '');
@@ -585,9 +546,7 @@ export class Layout extends React.Component<ILayoutProps, any> {
 
         const dropInfo = this.model!._findDropTargetNode(this.dragNode!, pos.x, pos.y);
         if (dropInfo) {
-            const isDroppedToCenterLocation = dropInfo.location === DockLocation.CENTER;
-            const isWithinTabset = dropInfo.index === -1; // Moving to between borders & tabsets always generates a positive index number.
-            this.dropInfo = !isDroppedToCenterLocation || !isWithinTabset ? dropInfo : undefined;
+            this.dropInfo = dropInfo;
             this.outlineDiv!.className = this.getClassName(dropInfo.className);
             dropInfo.rect.positionElement(this.outlineDiv!);
         }
