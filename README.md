@@ -20,7 +20,7 @@ If you're in dire need of a React.js library that supports tabsets which can bot
 ### Where to start? / Installation / Usage
 For the installation & usage, check the original docs below. I've made some additional details based on what I've contributed so far.
 
-This fork contains additional features not included in the original. To use this specific fork in your projects, follow these commands:
+This fork contains additional features not included in the original. It is currently being pitched as a proof of concept at https://github.com/caplin/FlexLayout/issues/61. To use this specific fork in your projects, follow these commands:
 
 ```
 npm install react --save
