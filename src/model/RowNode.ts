@@ -29,16 +29,16 @@ class RowNode extends Node implements IDropTarget{
         model._addNode(this);
     }
 
-    getWeight() {
-        return this._attributes["weight"] as number;
-    }
-
     getWidth() {
         return this._getAttributeAsNumberOrUndefined("width");
     }
 
     getHeight() {
         return this._getAttributeAsNumberOrUndefined("height");
+    }
+
+    getWeight() {
+        return this._attributes["weight"] as number;
     }
 
     /** @hidden @internal */
@@ -204,6 +204,15 @@ class RowNode extends Node implements IDropTarget{
         }
 
         return this._drawChildren;
+    }
+
+    /** @hidden @internal */
+    _getPrefSize(orientation: Orientation) {
+        let prefSize = this.getWidth();
+        if (orientation === Orientation.VERT) {
+            prefSize = this.getHeight();
+        }
+        return prefSize;
     }
 
     /** @hidden @internal */
@@ -389,6 +398,10 @@ class RowNode extends Node implements IDropTarget{
         this._model._tidy();
     }
 
+    isEnableDrop() {
+        return true;
+    }
+
     /** @hidden @internal */
     _toJson() {
         const json: any = {};
@@ -421,19 +434,6 @@ class RowNode extends Node implements IDropTarget{
         }
 
         return newLayoutNode;
-    }
-
-    isEnableDrop() {
-        return true;
-    }
-
-    /** @hidden @internal */
-    _getPrefSize(orientation: Orientation) {
-        let prefSize = this.getWidth();
-        if (orientation === Orientation.VERT) {
-            prefSize = this.getHeight();
-        }
-        return prefSize;
     }
 
     /** @hidden @internal */
