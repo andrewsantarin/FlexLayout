@@ -1,14 +1,26 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
+import { Rnd, ResizableDelta, Position } from "react-rnd";
+import { ResizableDirection } from "re-resizable";
+
+// views
 import { Splitter } from "./Splitter";
-import { Tab} from "./Tab";
+import { Tab } from "./Tab";
 import { TabSet } from "./TabSet";
+import { FloatingTab } from "./FloatingTab";
+import { FloatingTabSet } from "./FloatingTabSet";
 import { BorderTabSet } from "./BorderTabSet";
+
+// generics
+import { JSMap } from "../Types";
 import DragDrop from "../DragDrop";
 import Rect from "../Rect";
 import DockLocation from "../DockLocation";
+
+// models
 import Node from "../model/Node";
 import RowNode from "../model/RowNode";
+import FloatingNode from "../model/FloatingNode";
 import TabNode from "../model/TabNode";
 import TabSetNode from "../model/TabSetNode";
 import BorderNode from "../model/BorderNode";
@@ -17,7 +29,6 @@ import Actions from "../model/Actions";
 import Action from "../model/Action";
 import Model from "../model/Model";
 import BorderSet from "../model/BorderSet";
-import { JSMap } from "../Types";
 import IDraggable from "../model/IDraggable";
 
 export interface ILayoutProps {
@@ -197,6 +208,7 @@ export class Layout extends React.Component<ILayoutProps, any> {
                 })}
                 {borderComponents}
                 {splitterComponents}
+                {this.renderFloating(this.model!.getFloatingRoot())}
             </div>
         );
     }
@@ -229,8 +241,145 @@ export class Layout extends React.Component<ILayoutProps, any> {
         }
     }
 
+    renderFloating(node: FloatingNode) {
+        const drawChildren = (node._getDrawChildren() as Array<TabSetNode>);
+        const floating = drawChildren.map((tabSetNode, i) => {
+            const tabSetNodeId = tabSetNode.getId();
+            const tabSetActive = tabSetNode.isActive();
+            const zIndex = (tabSetActive ? drawChildren.length + 1 : i) * 5;
+
+            return (
+                <div
+                    className="flexlayout__floating"
+                    key={tabSetNodeId}
+                    style={{ zIndex }}
+                >
+                    <TabSet
+                        key={tabSetNodeId}
+                        layout={this}
+                        node={tabSetNode}
+                    />
+                    {(tabSetNode.getChildren() as Array<TabNode>).map((tabNode) => {
+                        const tabNodeId = tabNode.getId();
+                        const selectedTabNode = tabSetNode.getChildren()[tabSetNode.getSelected()];
+
+                        return (
+                            <Tab
+                                key={tabNodeId}
+                                layout={this}
+                                node={tabNode}
+                                selected={tabNode === selectedTabNode}
+                                factory={this.props.factory}
+                            />
+                        );
+                    })}
+                </div>
+            );
+        });
+
+        return floating;
+    }
+
     /** @hidden @internal */
-    renderChildren(node: (RowNode | TabSetNode), tabSetComponents: Array<React.ReactNode>, tabComponents: JSMap<React.ReactNode>, splitterComponents: Array<React.ReactNode>) {
+    handleResize = (tabSetNode: TabSetNode) => (event: MouseEvent | TouchEvent, direction: ResizableDirection, ref: HTMLDivElement, delta: ResizableDelta, coordinates: Position) => {
+        const width = parseFloat(ref.style.width || '');
+        const height = parseFloat(ref.style.height || '');
+        const size = {
+            width,
+            height,
+        };
+        this.doAction(Actions.transformTabset(tabSetNode.getId(), coordinates, size));
+    }
+
+    /** @hidden @internal */
+    renderFloating(node: FloatingNode) {
+        const drawChildren = (node._getDrawChildren() as Array<TabSetNode>);
+        const floating = drawChildren.map((tabSetNode, i) => {
+            const tabSetNodeId = tabSetNode.getId();
+            const tabSetActive = tabSetNode.isActive();
+            const isMaximized = tabSetNode.isMaximized();
+
+            if (isMaximized) {
+                return (
+                    <React.Fragment key={tabSetNodeId}>
+                        <TabSet
+                            key={tabSetNodeId}
+                            layout={this}
+                            node={tabSetNode}
+                        />
+                        {(tabSetNode.getChildren() as Array<TabNode>).map((tabNode) => {
+                            const tabNodeId = tabNode.getId();
+                            const selectedTabNode = tabSetNode.getChildren()[tabSetNode.getSelected()];
+
+                            return (
+                                <Tab
+                                    key={tabNodeId}
+                                    layout={this}
+                                    node={tabNode}
+                                    selected={tabNode === selectedTabNode}
+                                    factory={this.props.factory}
+                                />
+                            );
+                        })}
+                    </React.Fragment>
+                );
+            }
+
+            const size = {
+                width: tabSetNode.getWidth() || 0,
+                height: tabSetNode.getHeight() || 0,
+            };
+            const position = {
+                x: tabSetNode.getX() || 0,
+                y: tabSetNode.getY() || 0,
+            };
+            const style = {
+                zIndex: (tabSetActive ? drawChildren.length + 1 : i) * 5
+            };
+
+            return (
+                <Rnd
+                    className="flexlayout__floating"
+                    disableDragging
+                    key={tabSetNodeId}
+                    onResize={this.handleResize(tabSetNode)}
+                    position={position}
+                    size={size}
+                    style={style}
+                >
+                    <FloatingTabSet
+                        key={tabSetNodeId}
+                        layout={this}
+                        node={tabSetNode}
+                    />
+                    {(tabSetNode.getChildren() as Array<TabNode>).map((tabNode) => {
+                        const tabNodeId = tabNode.getId();
+                        const selectedTabNode = tabSetNode.getChildren()[tabSetNode.getSelected()];
+
+                        return (
+                            <FloatingTab
+                                key={tabNodeId}
+                                layout={this}
+                                node={tabNode}
+                                selected={tabNode === selectedTabNode}
+                                factory={this.props.factory}
+                            />
+                        );
+                    })}
+                </Rnd>
+            );
+        });
+
+        return floating;
+    }
+
+    /** @hidden @internal */
+    renderChildren(
+        node: (RowNode | TabSetNode),
+        tabSetComponents: Array<React.ReactNode>,
+        tabComponents: JSMap<React.ReactNode>,
+        splitterComponents: Array<React.ReactNode>
+    ) {
         const drawChildren = node._getDrawChildren();
 
         for (let i = 0; i < drawChildren!.length; i++) {
@@ -381,7 +530,15 @@ export class Layout extends React.Component<ILayoutProps, any> {
         else {
             this.dragNode = node;
             this.dragDivText = dragDivText;
-            DragDrop.instance.startDrag(event, this.onDragStart.bind(this), this.onDragMove.bind(this), this.onDragEnd.bind(this), this.onCancelDrag.bind(this), onClick, onDoubleClick);
+            DragDrop.instance.startDrag(
+                event,
+                this.onDragStart.bind(this),
+                this.onDragMove.bind(this),
+                this.onDragEnd.bind(this),
+                this.onCancelDrag.bind(this),
+                onClick,
+                onDoubleClick
+            );
         }
     }
 
@@ -428,7 +585,9 @@ export class Layout extends React.Component<ILayoutProps, any> {
 
         const dropInfo = this.model!._findDropTargetNode(this.dragNode!, pos.x, pos.y);
         if (dropInfo) {
-            this.dropInfo = dropInfo;
+            const isDroppedToCenterLocation = dropInfo.location === DockLocation.CENTER;
+            const isWithinTabset = dropInfo.index === -1; // Moving to between borders & tabsets always generates a positive index number.
+            this.dropInfo = !isDroppedToCenterLocation || !isWithinTabset ? dropInfo : undefined;
             this.outlineDiv!.className = this.getClassName(dropInfo.className);
             dropInfo.rect.positionElement(this.outlineDiv!);
         }
@@ -443,6 +602,7 @@ export class Layout extends React.Component<ILayoutProps, any> {
         this.hideEdges(rootdiv);
         DragDrop.instance.hideGlass();
 
+
         if (this.dropInfo) {
             if (this.newTabJson !== undefined) {
                 this.doAction(Actions.addNode(this.newTabJson, this.dropInfo.node.getId(), this.dropInfo.location, this.dropInfo.index));
@@ -456,7 +616,14 @@ export class Layout extends React.Component<ILayoutProps, any> {
             else if (this.dragNode !== undefined) {
                 this.doAction(Actions.moveNode(this.dragNode.getId(), this.dropInfo.node.getId(), this.dropInfo.location, this.dropInfo.index));
             }
-
+        }
+        else {
+            // Execute this when .addTabWithDragAndDrop() / .addTabWithDragAndDropIndirect()
+            // has been cancelled by dropping into inapplicable space.
+            if (this.fnNewNodeDropped != undefined) {
+                this.fnNewNodeDropped();
+                this.fnNewNodeDropped = undefined;
+            }
         }
     }
 

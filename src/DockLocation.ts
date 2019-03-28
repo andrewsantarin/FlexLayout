@@ -10,6 +10,7 @@ class DockLocation {
     static LEFT = new DockLocation("left", Orientation.HORZ, 0);
     static RIGHT = new DockLocation("right", Orientation.HORZ, 1);
     static CENTER = new DockLocation("center", Orientation.VERT, 0);
+    static HEADER = new DockLocation("header", Orientation.VERT, 0);
 
     /** @hidden @internal */
     _name: string;
@@ -17,6 +18,9 @@ class DockLocation {
     _orientation: Orientation;
     /** @hidden @internal */
     _indexPlus: number;
+
+    public x: number = -1;
+    public y: number = -1;
 
     /** @hidden @internal */
     constructor(name: string, orientation: Orientation, indexPlus: number) {
@@ -41,23 +45,42 @@ class DockLocation {
 
     /** @hidden @internal */
     static getLocation(rect: Rect, x: number, y: number) {
-        if (x < rect.x + rect.width / 4) {
-            return DockLocation.LEFT;
+        // Set the maximum non-edge dock location to 40px
+        // so that the free floating tabsets have a lot of
+        // space to move around freely.
+        if (x < rect.x + Math.min(rect.width / 4, 40)) {
+            let dockLocation = DockLocation.LEFT;
+            dockLocation.x = x;
+            dockLocation.y = y;
+            return dockLocation;
         }
 
-        else if (x > rect.getRight() - rect.width / 4) {
-            return DockLocation.RIGHT;
+        else if (x > rect.getRight() - Math.min(rect.width / 4, 40)) {
+            let dockLocation = DockLocation.RIGHT;
+            dockLocation.x = x;
+            dockLocation.y = y;
+            return dockLocation;
         }
 
-        else if (y < rect.y + rect.height / 4) {
-            return DockLocation.TOP;
+        else if (y < rect.y + Math.min(rect.height / 4, 40)) {
+            let dockLocation = DockLocation.TOP;
+            dockLocation.x = x;
+            dockLocation.y = y;
+            return dockLocation;
         }
 
-        else if (y > rect.getBottom() - rect.height / 4) {
-            return DockLocation.BOTTOM;
+        else if (y > rect.getBottom() - Math.min(rect.height / 4, 40)) {
+            let dockLocation = DockLocation.BOTTOM;
+            dockLocation.x = x;
+            dockLocation.y = y;
+            return dockLocation;
         }
+
         else {
-            return DockLocation.CENTER;
+            let dockLocation = DockLocation.CENTER;
+            dockLocation.x = x;
+            dockLocation.y = y;
+            return dockLocation;
         }
     }
 
