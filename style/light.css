@@ -83,6 +83,14 @@
     /* box-shadow: 2px 2px 4px #aaa; */
 }
 
+.flexlayout__floating {
+    position: absolute;
+}
+
+.flexlayout__floating > .flexlayout__tabset {
+    border-radius: 5px;
+    box-shadow: 2px 2px 4px #aaa;
+}
 
 .flexlayout__tab {
     overflow: auto;
