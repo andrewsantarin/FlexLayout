@@ -1,3 +1,85 @@
+# FlexLayout Extended
+
+This fork extends the existing `flexlayout-react` library with additional features.
+
+------------
+## Notes from the Contributor
+
+Hello, there. You might be wondering, "What the fork? What's going on?"
+
+Terrible joke, I know.
+
+To put it simply: It's a version of `FlexLayout` (a.k.a. [`flexlayout-react`](https://www.npmjs.com/package/flexlayout-react) on NPM) which is still very much a work in progress. Currenly, I'm developing a feature which will support docking & undocking of tabs.
+
+![FlexLayout Demo Screenshot](https://i.imgur.com/Qs2ohCQ.png "FlexLayout Demo Screenshot")
+See my Imgur upload (https://i.imgur.com/Qs2ohCQ.png) for a rough prototype idea of what this extension intends to do.
+
+### Premise and Objective
+If you're in dire need of a React.js library that supports tabsets which can both be separated on the grid and float freely one the screen, then this extended library is most likely for you.
+
+The library extension was built for an upcoming product at my full-time job, actually. There are a lot of amazing libraries out there which support dock-like features in the browser, two of which are built specifically for React (this library is one of them!):
+
+- https://github.com/caplin/FlexLayout ([demo](https://rawgit.com/caplin/FlexLayout/demos/demos/v0.30/demo/index.html))
+
+  You're looking at it (or rather, its extension) right now.
+
+- https://github.com/golden-layout/golden-layout ([demo](http://golden-layout.com))
+
+  jQuery dependent, even if you use React.js
+
+- https://github.com/nomcopter/react-mosaic ([demo](https://nomcopter.github.io/react-mosaic))
+
+  It integrates with https://github.com/palantir/blueprint (`react-mosaic` was formerly https://github.com/palantir/react-mosaic; same author!) if you want to use that UI toolkit, really cool; its docking API -- not so much.
+
+- https://github.com/WebCabin/wcDocker ([demo](http://docker.webcabin.org))
+
+  Nice and all, but I can't find any React.js integration docs anywhere. also sadly jQuery-dependent, like `golden-layout`.
+
+- https://github.com/coderespawn/dock-spawn ([demo](http://www.dockspawn.com/))
+
+  Written in Dart. Not what I want.
+
+- https://github.com/phosphorjs/phosphor ([demo](http://phosphorjs.github.io/examples/dockpanel))
+
+  Widget feels really snappy, but I'll have to write my project as a Phosphor.js project first as the main, then React.js in the underlying components. Not what I want.
+
+- [ExtJS `Ext.WindowManager`](https://docs.sencha.com/extjs/6.5.2/classic/Ext.WindowManager.html)
+
+  My colleagues currently use this for **existing** projects only. Not what I want.
+
+In all of my findings, none of them (not even vanilla `FlexLayout`) are even this close to supporting the docking system for my needs: 
+
+- It needs to work in an existing React ecosystem. Therefore, no, I can't use Dart, Phosphor or jQuery.
+- It needs to present the widgets like how an IDE does: tabs grouped into tabsets grouped into columns grouped into rows, floating tabsets and then some.
+- It needs to be actively maintained, not a 3-year fossil.
+
+All of this research and development started [here](https://github.com/caplin/FlexLayout/issues/11) and [here](https://github.com/golden-layout/golden-layout/issues/189).
+
+### Where to start? / Installation / Usage
+For the installation & usage, check the original docs below. I've made some additional details based on what I've contributed so far.
+
+If you want to see this library's tie-in examples, then do this:
+
+```sh
+git clone https://github.com/andrewsantarin/FlexLayout.git
+cd FlexLayout
+git checkout -b branch origin/wip/<the-wip-branch-name>
+npm install
+npm start
+```
+
+Replace the `wip/<the-wip-branch-name>` with any particular development branch I'm working on. If you want to see what's in store for this library, don't look at the `master` branch. Instead, refer to one of these three groups:
+
+- `develop` - merge of all `feature` commits
+- `feature` - polished up commits
+- `wip` - totally new stuff, very unstable
+
+Once you run `npm start`, wait for the `webpack` bundler to finish, then open http://localhost:3000 on your local browser.
+
+------------
+Normal docs continue below!
+
+------------
 # FlexLayout
 
 FlexLayout is a layout manager that arranges React components in multiple tab sets, these can be resized and moved.
@@ -23,17 +105,18 @@ Features:
 *	maximize tabset (double click tabset header or use icon)
 *	tab overflow (show menu when tabs overflow)
 *   border tabsets
+*	floating tabsets
 *	submodels, allow layouts inside layouts
 *	tab renaming (double click tab text to rename)
 *	themeing - light and dark
 *	touch events - works on mobile devices (iPad, Android)
 *   add tabs using drag, indirect drag, add to active tabset, add to tabset by id
 *   preferred pixel size tabsets
-*   headed tabsets
+*   tabset with headers
 *	tab and tabset attributes: enableHeader, enableTabStrip, enableDock, enableDrop...
 *	customizable tabs and tabset header rendering
-*   esc cancels drag
-*	typescript type declarations included
+*   `[esc]` key to cancel drag
+*	typescript type declarations
 *	supports overriding css class names via the classNameMapper prop, for use in css modules
 
 ## Installation
@@ -56,6 +139,14 @@ import FlexLayout from "flexlayout-react";
 
 Include the light or dark style in your html:
 
+Light
+
+```
+<link rel="stylesheet" href="node_modules/flexlayout-react/style/light.css" />
+```
+
+Dark:
+
 ```
 <link rel="stylesheet" href="node_modules/flexlayout-react/style/dark.css" />
 ```
@@ -64,12 +155,11 @@ Include the light or dark style in your html:
 
 The `<Layout>` component renders the tabsets and splitters, it takes the following props:
 
-
 | Prop       | Required/Optional           | Description  |
 | ------------- |:-------------:| -----|
 | model    | required | the layout model  |
 | factory      | required | a factory function for creating React components |
-| onAction | optional     |  function called whenever the layout generates an action to update the model (allows for intercepting actions before they are dispatched to the model, for example, asking the user to confirm a tab close) |
+| onAction | optional     |  function called whenever the layout generates an action to update the model (allows for intercepting actions before they are dispatched to the model, e.g.: asking the user to confirm a tab close) |
 | onRenderTab | optional     |  function called when rendering a tab, allows leading (icon) and content sections to be customized |
 | onRenderTabSet | optional     |  function called when rendering a tabset, allows header and buttons to be customized |
 | onModelChange | optional     |  function called when model has changed  |
@@ -85,242 +175,319 @@ The model can be created using the Model.fromJson(jsonObject) static method, and
 this.state = {model: FlexLayout.Model.fromJson(json)};
 
 render() {
-	<Layout model={this.state.model} factory={factory}/>
+  <Layout model={this.state.model} factory={factory}/>
 }
 ```
 
-## Example Configuration:
+## Example Configuration
+
+Consider this typical use case and its implementation code below:
+
+- You want a main layout that has two groups of tabs, split evenly in the middle. 
+- You also want another tab to float freely over the main layout, which can be moved around at the user's discretion.
+- You also want yet another set of panels which contain docked tabs on all four sides of your main layout.
 
 ```javascript
-var json = {
-	global: {},
-	borders: [],
-	layout:{
-		"type": "row",
-		"weight": 100,
-		"children": [
-			{
-				"type": "tabset",
-				"weight": 50,
-				"selected": 0,
-				"children": [
-					{
-						"type": "tab",
-						"name": "FX",
-						"component":"grid",
-					}
-				]
-			},
-			{
-				"type": "tabset",
-				"weight": 50,
-				"selected": 0,
-				"children": [
-					{
-						"type": "tab",
-						"name": "FI",
-						"component":"grid",
-					}
-				]
-			}
-		]
-	}
+const json = {
+  global: {},
+  layout: { // Required
+    type: "row", // Also required.
+    weight: 100, // Also required.
+    children: [
+      // Optional children elements.
+      // If you'd rather not have any elements on this layer, leave the "children" array empty.
+      {
+        type: "tabset",
+        weight: 50, // Not in pixels, but rather, a relative ratio between the children of the same parent.
+        selected: 0,
+        children: [
+          {
+            type: "tab",
+            name: "FX",
+            component: "grid",
+          }
+        ],
+      },
+      {
+        type: "tabset",
+        weight: 50, // Not in pixels, but rather, a relative ratio between the children of the same parent.
+        selected: 0,
+        children: [
+          {
+            "type": "tab",
+            "name": "FI",
+            "component": "grid",
+          },
+        ],
+      },
+    ],
+  },
+  floating: { // Required
+    type: "floating", // Also required.
+    children: [ 	  // Also required.
+      // Optional children elements.
+      // If you'd rather not have any elements on this layer, leave the "children" array empty.
+      // You may only nest tabsets up to 1 level from the floating element.
+      {
+        type: "tabset",
+        // Use the following on the tabset instead of "weight".
+        x: 125,			// From the topmost pixel of the layout root element.
+        y: 250,			// From the leftmost pixel of the layout root element.
+        width: 600,		// Initial pixel width of the child element.
+        height: 480,	// Initial pixel height of the child element.
+        // ------------ //
+        selected: 0,
+        children: [
+          {
+            type: "tab",
+            name: "FX",
+            component: "grid",
+          },
+        ],
+      },
+    ],
+  },
+  "borders": [ // Optional
+    // You can specify up to 4 borders in total across 4 sides.
+    // 1 border = 1 side
+    {
+      "type": "border",
+      "location": "top",
+      "children": [
+        {
+          "type": "tab",
+          "enableClose": false,
+          "name": "Navigation",
+          "component": "grid"
+        }
+      ]
+    },
+    {
+      "type": "border",
+      "location": "left",
+      "children": [
+        {
+          "type": "tab",
+          "enableClose": false,
+          "name": "Views",
+          "component": "grid"
+        }
+      ]
+    },
+    {
+      "type": "border",
+      "location": "right",
+      "children": [
+        {
+          "type": "tab",
+          "enableClose": false,
+          "name": "Options",
+          "component": "grid"
+        }
+      ]
+    },
+    {
+      "type": "border",
+      "location": "bottom",
+      "children": [
+        {
+          "type": "tab",
+          "enableClose": false,
+          "name": "Activity Blotter",
+          "component": "grid"
+        },
+        {
+          "type": "tab",
+          "enableClose": false,
+          "name": "Execution Blotter",
+          "component": "grid"
+        }
+      ]
+    }
+  ]
 };
 ```
 
 ## Example Code
 
-```
+```jsx
 import React from "react";
 import ReactDOM from "react-dom";
 import FlexLayout from "flexlayout-react";
 
+// Let's assume that the example configuration above is what we want.
+import MAIN_LAYOUT_JSON from "./main.layout.json";
+
 class Main extends React.Component {
+  constructor(props) {
+    super(props);
 
-    constructor(props) {
-        super(props);
-        this.state = {model: FlexLayout.Model.fromJson(json)};
-    }
+    this.state = {
+      model: FlexLayout.Model.fromJson(MAIN_LAYOUT_JSON),
+    };
+  }
 
-    factory(node) {
-        var component = node.getComponent();
-        if (component === "button") {
-            return <button>{node.getName()}</button>;
-        }
+  factory = (node) => {
+    const component = node.getComponent();
+    if (component === "button") {
+      return <button>{node.getName()}</button>;
     }
+  }
 
-    render() {
-        return (
-            <FlexLayout.Layout model={this.state.model} factory={this.factory.bind(this)}/>
-        )
-    }
+  render() {
+    return (
+      <FlexLayout.Layout model={this.state.model} factory={this.factory}/>
+    )
+  }
 }
 
 ReactDOM.render(<Main/>, document.getElementById("container"));
-```		
-(See the examples for full source code)
+```
 
 The above code would render two tabsets horizontally each containing a single tab that hosts a button component. The tabs could be moved and resized by dragging and dropping. Additional grids could be added to the layout by sending actions to the model.
 
+If you're looking for more advanced implementations to exert additional control over your layout, [see our examples](./src/examples).
+
 Try it now using [JSFiddle](https://jsfiddle.net/9x6hecdw/1) 
 
+## Core Concept
 
-The model is built up using 4 types of 'node':
+The model revolves around 4 types of "node":
 
-* row - rows contains a list of tabsets and child rows, the top level row will render horizontally, child 'rows' will render in the opposite orientation to their parent.
+* **row**
 
-* tabset - tabsets contain a list of tabs and the index of the selected tab
+  Rows contain a list of tabsets and child rows. The top level row will render horizontally, while child "rows" will render in the opposite orientation to their parent. 
+  
+  **Note:** Rows can't be nested in on `floating` and `border`.
 
-* tab - tabs specify the name of the component that they should host (that will be loaded via the factory) and the text of the actual tab.
+* **tabset**
 
-* border - borders contain a list of tabs and the index of the selected tab, they can only be used in the borders
-top level element.
+  Tabsets contain a list of tabs and the index of the selected tab.
+
+* **tab**
+
+  Tabs specify the name of the component that they should host (that will be loaded via the factory) and the text of the actual tab.
+
+* **border**
+
+  Borders contain a list of tabs and the index of the selected tab; they can only be used in the border's top level element.
 
 The main layout is defined with rows within rows that contain tabsets that themselves contain tabs.
 
-The model json contains 3 top level elements:
+The model json contains 4 top level elements:
 
-* global - where global options are defined
-* layout - where the main row/tabset/tabs layout hierarchy is defined
-* borders - (optional) where up to 4 borders are defined ("top", "bottom", "left", "right"). 
+* `global`
 
-Weights on rows and tabsets specify the relative weight of these nodes within the parent row, the actual values do not matter just their relative values (ie two tabsets of weights 30,70 would render the same if they had weights of 3,7).
+  where global options are defined.
 
-example borders section:
-```
-	"borders": [
-		 {
-		    "type":"border",
-		 	"location": "left",
-			"children": [
-				{
-					"type": "tab",
-					"enableClose":false,
-					"name": "Navigation",
-					"component": "grid",
-				}
-			]
-		},
-		{
-		    "type":"border",
-		 	"location": "right",
-			"children": [
-				{
-					"type": "tab",
-					"enableClose":false,
-					"name": "Options",
-					"component": "grid",
-				}
-			]
-		},
-		{
-		    "type":"border",
-			"location": "bottom",
-			"children": [
-				{
-					"type": "tab",
-					"enableClose":false,
-					"name": "Activity Blotter",
-					"component": "grid",
-				},
-				{
-					"type": "tab",
-					"enableClose":false,
-					"name": "Execution Blotter",
-					"component": "grid",
-				}
-			]
-		}
-	]
-```
+* `layout`
 
-To control where nodes can be dropped you can add a callback function to the model:
+  where the grid-separated `row -> tabset -> tabs` layout hierarchy is defined.
 
-```
+* `floating`
+
+  where the free-floating `tabset -> tabs` hierarchy is defined.
+
+* _(optional)_ `borders`
+
+  where up to 4 borders are defined (i.e. the `"top"`, `"bottom"`, `"left"`, `"right"` sides), one border for each side.
+
+Weights on rows and tabsets specify the relative weight of these nodes within the parent row. The actual pixel values do not matter; their relative values will be calculated instead (i.e. two tabsets of weights `30`,`70` relative their parent element would render the same if they had weights of `3`,`7`).
+
+To control where nodes can be dropped, you can add a callback function to the model:
+
+```javascript
 model.setOnAllowDrop(this.allowDrop);
 ```
 
-example:
-```
-    allowDrop(dragNode, dropInfo) {
-        let dropNode = dropInfo.node;
+Example:
+```javascript
+class Main extends Component {
+  allowDrop = (dragNode, dropInfo) => {
+    let dropNode = dropInfo.node;
 
-        // prevent non-border tabs dropping into borders
-        if (dropNode.getType() == "border" && (dragNode.getParent() == null || dragNode.getParent().getType() != "border"))
-            return false;
-
-        // prevent border tabs dropping into main layout
-        if (dropNode.getType() != "border" && (dragNode.getParent() != null && dragNode.getParent().getType() == "border"))
-            return false;
-
-        return true;
+    // prevent non-border tabs dropping into borders
+    if (dropNode.getType() == "border" && (dragNode.getParent() == null || dragNode.getParent().getType() != "border")) {
+      return false;
     }
+
+    // prevent border tabs dropping into main layout
+    if (dropNode.getType() != "border" && (dragNode.getParent() != null && dragNode.getParent().getType() == "border")) {
+      return false;
+    }
+
+    return true;
+  }
+}
 ```
 
-By changing global or node attributes you can change the layout appearance and functionality, for example:
+By changing global or node attributes you can change the layout appearance and behavior.
 
-Setting tabSetEnableTabStrip:false in the global options would change the layout into a multi-splitter (without
+For example, setting `tabSetEnableTabStrip` to `false` in the global options would change the layout into a multi-splitter (without
 tabs or drag and drop).
 
-```
- global: {tabSetEnableTabStrip:false},
+```json
+{
+  "global": {
+    "tabSetEnableTabStrip": false
+  }
+}
 ```
 
 ## Global Config attributes
 
-Attributes allowed in the 'global' element
-
+Attributes allowed in the `global` element
 
 | Attribute | Default | Description  |
 | ------------- |:-------------:| -----|
-| splitterSize | 8 | |
-| enableEdgeDock | true | |
-| tabEnableClose | true | |
-| tabEnableDrag | true | |
-| tabEnableRename | true | |
-| tabClassName | null | |
-| tabIcon | null | |
-| tabEnableRenderOnDemand | true | |
-| tabDragSpeed | 0.3 | CSS transition speed of drag outlines (in seconds) |
-| tabSetEnableDeleteWhenEmpty | true | |
-| tabSetEnableDrop | true | |
-| tabSetEnableDrag | true | |
-| tabSetEnableDivide | true | |
-| tabSetEnableMaximize | true | |
-| tabSetClassNameTabStrip | null | |
-| tabSetClassNameHeader | null | |
-| tabSetEnableTabStrip | true | |
-| tabSetHeaderHeight | 20 | |
-| tabSetTabStripHeight | 20 | |
-| borderBarSize | 25 | |
-| borderEnableDrop | true | |
-| borderClassName | null | |
+| splitterSize | `8` | |
+| enableEdgeDock | `true` | |
+| tabEnableClose | `true` | |
+| tabEnableDrag | `true` | |
+| tabEnableRename | `true` | |
+| tabClassName | `null` | |
+| tabIcon | `null` | |
+| tabEnableRenderOnDemand | `true` | |
+| tabDragSpeed | `0.3` | CSS transition speed of drag outlines (in seconds) |
+| tabSetEnableDeleteWhenEmpty | `true` | |
+| tabSetEnableDrop | `true` | |
+| tabSetEnableDrag | `true` | |
+| tabSetEnableDivide | `true` | |
+| tabSetEnableMaximize | `true` | |
+| tabSetClassNameTabStrip | `null` | |
+| tabSetClassNameHeader | `null` | |
+| tabSetEnableTabStrip | `true` | |
+| tabSetHeaderHeight | `20` | |
+| tabSetTabStripHeight | `20` | |
+| borderBarSize | `25` | |
+| borderEnableDrop | `true` | |
+| borderClassName | `null` | |
 
 ## Row Attributes
 
-Attributes allowed in nodes of type 'row'.
+Attributes allowed in nodes of type `"row"`.
 
 | Attribute | Default | Description  |
 | ------------- |:-------------:| -----|
-| type | row | |
-| weight | 100 | |
-| width | null | preferred pixel width |
-| height | null | preferred pixel height |
+| type | `"row"` | |
+| weight | `100` | |
+| width | `null` | preferred pixel width |
+| height | `null` | preferred pixel height |
 | children | *required* | a list of row and tabset nodes |
 
 ## Tab Attributes
 
-Attributes allowed in nodes of type 'tab'.
+Attributes allowed in nodes of type `"tab"`.
 
 Inherited defaults will take their value from the associated global attributes (see above).
 
 
 | Attribute | Default | Description  |
 | ------------- |:-------------:| -----|
-| type | tab | |
+| type | `"tab"` | |
 | name | *required* | |
 | component | *required* | |
-| config | null | a place to hold json config for the hosted component |
+| config | `null` | a place to hold json config for the hosted component |
 | id | auto generated | |
 | enableClose | *inherited* | |
 | enableDrag | *inherited* | |
@@ -329,27 +496,29 @@ Inherited defaults will take their value from the associated global attributes (
 | icon | *inherited* | |
 | enableRenderOnDemand | *inherited* | |
 
-Tab nodes have a getExtraData() method that initially returns an empty object, this is the place to 
+Tab nodes have a `getExtraData()` method that initially returns an empty object. This is the place to 
 add extra data to a tab node that will not be saved.
 
 
 ## TabSet Attributes
 
-Attributes allowed in nodes of type 'tabset'.
+Attributes allowed in nodes of type `"tabset"`.
 
 Inherited defaults will take their value from the associated global attributes (see above).
 
-Note: tabsets can be dynamically created as tabs are moved and deleted when all their tabs are removed (unless enableDeleteWhenEmpty is false).
+**Note**: tabsets can be dynamically created as tabs are moved and deleted when all their tabs are removed (unless `enableDeleteWhenEmpty` is `false`).
 
 | Attribute | Default | Description  |
 | ------------- |:-------------:| -----|
-| type | tabset | |
-| weight | 100 | |
-| width | null | preferred pixel width |
-| height | null | preferred pixel height |
-| name | null | named tabsets will show a header bar above the tabs |
-| selected | 0 | |
-| maximized | false | |
+| type | `"tabset"` | |
+| weight | `100` | |
+| width | `null` | preferred pixel width |
+| height | `null` | preferred pixel height |
+| x | `null` | preferred pixel offset from the leftmost corner of the `<Layout>` container, equivalent of CSS `left` |
+| y | `null` | preferred pixel offset from the topmost corner of the `<Layout>` container, equivalent of CSS `top` |
+| name | `null` | named tabsets will show a header bar above the tabs |
+| selected | `0` | |
+| maximized | `false` | |
 | id | auto generated | |
 | children | *required* | a list of tab nodes |
 | enableDeleteWhenEmpty | *inherited* | |
@@ -363,20 +532,24 @@ Note: tabsets can be dynamically created as tabs are moved and deleted when all 
 | headerHeight | *inherited* | |
 | tabStripHeight | *inherited* | |
 
+Tab set nodes will use certain positioning, size and relative split variables depending on where it has been nested: 
+- `weight` when nested inside `layout`
+- `width`, `height`, `x`, `y` when nested inside `floating`
+
 ## Border Attributes
 
-Attributes allowed in nodes of type 'border'.
+Attributes allowed in nodes of type `"border"`.
 
 Inherited defaults will take their value from the associated global attributes (see above).
 
 
 | Attribute | Default | Description  |
 | ------------- |:-------------:| -----|
-| type | border | |
-| size | 200 | size of the tab body when selected |
-| selected | -1 | -1 is the unselected value|
-| id | auto generated | border_ + border name e.g. border_left |
-| show | true | show/hide this border |
+| type | `"border"` | |
+| size | `200` | size of the tab body when selected |
+| selected | `-1` | `-1` = unselected |
+| id | auto generated | `"border_"` + border name, e.g. `"border_left"` |
+| show | `true` | show/hide this border |
 | children | *required* | a list of tab nodes |
 | barSize | *inherited* | |
 | enableDrop | *inherited* | |
@@ -385,23 +558,19 @@ Inherited defaults will take their value from the associated global attributes (
 
 ## Model Actions
 
-All changes to the model are applied through actions, you can intercept actions resulting from GUI changes before they are applied by
-implementing the onAction callback property of the Layout. You can also apply actions directly using the Model.doAction()
-method.
+All changes to the model are applied through actions. You can intercept actions resulting from GUI changes before they are applied by implementing the `onAction` callback property of the `<Layout>` component. You can also apply actions directly using the `Model.doAction()` method.
 
-#Example
+# Example
 
-```
-        model.doAction(Actions.updateModelAttributes({
-            splitterSize:40,
-            tabSetHeaderHeight:40,
-            tabSetTabStripHeight:40
-        }));
+```javascript
+model.doAction(Actions.updateModelAttributes({
+  splitterSize: 40,
+  tabSetHeaderHeight: 40,
+  tabSetTabStripHeight: 40
+}));
 ```
 
-The above example would increase the size of the splitters, tabset headers and tabs, this could be used to make
-adjusting the layout easier on a small device.
-
+The above example would increase the size of the splitters, tabset headers and tabs. This could be used to make adjusting the layout easier on a small device.
 
 | Action Creator | Description  |
 | ------------- | -----|
@@ -416,51 +585,70 @@ adjusting the layout easier on a small device.
 |	Actions.updateNodeAttributes(nodeId, attributes) | updates the attributes of the given node |
 |	Actions.adjustBorderSplit(borderNodeId, pos) | updates the size of the given border node |
 
-for example:
+Example:
 
+```javascript
+model.doAction(Actions.addNode(
+  { // Your new tab.
+    type: "tab",
+    component: "grid",
+    name: "a grid",
+    id: "5"
+  },
+  "1",
+  DropLocation.CENTER,
+  0
+));
 ```
-model.doAction(Actions.addNode({type:"tab", component:"grid", name:"a grid", id:"5"}, "1", DropLocation.CENTER, 0));
-```
-This would add a new grid component to the center of tabset with id "1" and at the 0'th tab position (use value -1 to add to the end of the tabs).
-Note: you can get the id of a node using the method node.getId(), if an id wasn't assigned when the node was created then one will be created for you of the form #<next available id> (e.g. #1, #2 ...).
+
+This code would add a new grid component to the center of tabset with id "1" and at the `0`'th tab position (use value `-1` to add to the end of the tabs).
+
+**Note:** You can get the `id` of a node using the method `node.getId()`. If an `id` wasn't assigned when the node was created, then one will be created for you of the form #\<next_available_id\> (e.g. #1, #2 ...).
 
 
 ## Layout Component Methods to Create New Tabs
 
-Methods on the Layout Component for adding tabs, the tabs are specified by their layout json.
+Methods on the Layout Component for adding tabs. The tabs are specified by their layout configuration in json.
 
 Example:
 
-```
-this.refs.layout.addTabToTabSet("NAVIGATION", {type:"tab", component:"grid", name:"a grid"});
+```javascript
+this.refs.layout.addTabToTabSet(
+  "NAVIGATION",
+  { // Your new tab.
+    type: "tab",
+    component: "grid",
+    name: "a grid"
+  }
+);
 ```
 This would add a new grid component to the tabset with id "NAVIGATION".
 
 
 | Layout Method | Description  |
 | ------------- | -----|
-| addTabToTabSet(tabsetId, json) | adds a new tab to the tabset with the given Id |
+| addTabToTabSet(tabsetId, json) | adds a new tab to the tabset with the given id |
 | addTabToActiveTabSet(json) | adds a new tab to the active tabset |
-| addTabWithDragAndDrop(dragText, json, onDrop) | adds a new tab by dragging a marker to the required location, the drag starts immediately |
-| addTabWithDragAndDropIndirect(dragText, json, onDrop) | adds a new tab by dragging a marker to the required location, the marker is shown and must be clicked on to start dragging |
+| addTabWithDragAndDrop(dragText, json, onDrop) | adds a new tab by dragging a marker to the required location; the drag takes effect immediately |
+| addTabWithDragAndDropIndirect(dragText, json, onDrop) | adds a new tab by dragging a marker to the required location; the marker is shown and must be clicked on to start dragging |
 
 ## Tab Node Events
 
-You can handle events on nodes by adding a listener, this would typically be done 
-in the components constructor() method.
+You can handle events on nodes by adding a listener. This would typically be done in the class component's `constructor()` method.
 
 Example:
-```
-    constructor(props) {
-        super(props);
-        let config = this.props.node.getConfig();
+```javascript
+class Main extends Component {
+  constructor(props) {
+    super(props);
+    let config = this.props.node.getConfig();
 
-        // save state in flexlayout node tree
-        this.props.node.setEventListener("save", function (p) {
-             config.subject = this.subject;
-        }.bind(this));
-    }
-
+    // save state in flexlayout node tree
+    this.props.node.setEventListener("save", function (p) {
+      config.subject = this.subject;
+    }.bind(this));
+  }
+}
 ```
 
 | Event        | parameters          | Description  |

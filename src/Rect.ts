@@ -56,6 +56,12 @@ class Rect {
         return style;
     }
 
+    styleWithoutPosition(style: JSMap<any>) {
+        style.width = Math.max(0, this.width) + "px"; // need Math.max to prevent -ve, cause error in IE
+        style.height = Math.max(0, this.height) + "px";
+        return style;
+    }
+
     contains(x: number, y: number) {
         if (this.x <= x && x <= this.getRight()
             && this.y <= y && y <= this.getBottom()) {

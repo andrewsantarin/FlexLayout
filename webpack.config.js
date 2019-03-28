@@ -1,8 +1,9 @@
+const webpack = require('webpack');
 
 module.exports = {
 	mode:'development',
 	entry: {
-		demo: "./examples/demo/App.tsx",
+		demo: "./examples/demo/index.tsx",
 	    tests: "./spec/main.ts"
 	},
 
@@ -19,8 +20,14 @@ module.exports = {
 	watch:true,
 
 	devServer: {
-		contentBase: '.'
-	   },
+		contentBase: '.',
+		port: 3000,
+		hot: true
+	},
+
+	plugins: [
+		new webpack.HotModuleReplacementPlugin()
+	],
 
 	devtool: 'source-map',
 

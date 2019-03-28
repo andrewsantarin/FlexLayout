@@ -1,6 +1,7 @@
 import {JSMap} from "../Types";
 import Node from "./Node";
 import RowNode from "./RowNode";
+import FloatingNode from "./FloatingNode";
 import Action from "./Action";
 import Actions from "./Actions";
 import TabNode from "./TabNode";
@@ -33,6 +34,8 @@ class Model {
     private _changeListener?: (() => void) ;
     /** @hidden @internal */
     private _root?: RowNode;
+    /** @hidden @internal */
+    private _floating?: FloatingNode;
     /** @hidden @internal */
     private _borders: BorderSet;
     /** @hidden @internal */
@@ -95,6 +98,14 @@ class Model {
     }
 
     /**
+     * Gets the FloatingNode of the model
+     * @returns {FloatingNode}
+     */
+    getFloatingRoot() {
+        return this._floating as FloatingNode;
+    }
+
+    /**
      * Gets the
      * @returns {BorderSet|*}
      */
@@ -114,6 +125,7 @@ class Model {
     visitNodes(fn: (node: Node, level: number) => void) {
         this._borders._forEachNode(fn);
         (this._root as RowNode)._forEachNode(fn, 0);
+        (this._floating as FloatingNode)._forEachNode(fn, 0);
     }
 
     /**
@@ -134,6 +146,7 @@ class Model {
         switch (action.type) {
             case Actions.ADD_NODE:
                 {
+                    // TODO: accomodate floating node logic also.
                     const newNode = new TabNode(this, action.data["json"]);
                     let toNode = this._idMap[action.data["toNode"]] as (Node & IDraggable);
                     if (toNode instanceof TabSetNode || toNode instanceof BorderNode || toNode instanceof RowNode) {
@@ -143,6 +156,7 @@ class Model {
                 }
             case Actions.MOVE_NODE:
                 {
+                    // TODO: accomodate floating node logic also.
                     const fromNode = this._idMap[action.data["fromNode"]] as (Node & IDraggable);
                     if (fromNode instanceof TabNode || fromNode instanceof TabSetNode) {
                         let toNode = this._idMap[action.data["toNode"]] as (Node & IDropTarget);
@@ -199,6 +213,41 @@ class Model {
                     const tabsetNode = this._idMap[action.data["tabsetNode"]];
                     if (tabsetNode instanceof TabSetNode) {
                         this._activeTabSet = tabsetNode;
+                    }
+                    break;
+                }
+            case Actions.SET_TABSET_POSITION:
+                {
+                    const tabsetNode = this._idMap[action.data["tabsetNode"]];
+                    const x = action.data["x"];
+                    const y = action.data["y"];
+                    if (tabsetNode instanceof TabSetNode) {
+                        tabsetNode._setX(x);
+                        tabsetNode._setY(y);
+                    }
+                }
+            case Actions.SET_TABSET_SIZE:
+                {
+                    const tabsetNode = this._idMap[action.data["tabsetNode"]];
+                    const width = action.data["width"];
+                    const height = action.data["height"];
+                    if (tabsetNode instanceof TabSetNode) {
+                        tabsetNode._setWidth(width);
+                        tabsetNode._setHeight(height);
+                    }
+                }
+            case Actions.TRANSFORM_TABSET:
+                {
+                    const tabsetNode = this._idMap[action.data["tabsetNode"]];
+                    const x = action.data["x"];
+                    const y = action.data["y"];
+                    const width = action.data["width"];
+                    const height = action.data["height"];
+                    if (tabsetNode instanceof TabSetNode) {
+                        tabsetNode._setX(x);
+                        tabsetNode._setY(y);
+                        tabsetNode._setWidth(width);
+                        tabsetNode._setHeight(height);
                     }
                     break;
                 }
@@ -290,6 +339,7 @@ class Model {
         });
 
         json.borders = this._borders._toJson();
+        json.floating = (this._floating as FloatingNode)._toJson();
         json.layout = (this._root as RowNode)._toJson();
         return json;
     }
@@ -306,12 +356,18 @@ class Model {
         if (json.borders) {
             model._borders = BorderSet._fromJson(json.borders, model);
         }
+
+        const floatingJson = json.floating || {
+            type: "floating",
+            children: []
+        };
+        model._floating = FloatingNode._fromJson(floatingJson, model);
         model._root = RowNode._fromJson(json.layout, model);
         model._tidy(); // initial tidy of node tree
         return model;
     }
 
-     getSplitterSize() {
+    getSplitterSize() {
         return this._attributes["splitterSize"] as number;
     }
 
@@ -338,13 +394,21 @@ class Model {
         rect = this._borderRects.inner.removeInsets(this._getAttribute("marginInsets"));
 
         (this._root as RowNode)._layout(rect);
+        (this._floating as FloatingNode)._layout(rect);
         return rect;
         //console.log("layout time: " + (Date.now() - start));
     }
 
     /** @hidden @internal */
     _findDropTargetNode(dragNode: (Node & IDraggable), x: number, y: number) {
-        let node = (this._root as RowNode)._findDropTargetNode(dragNode, x, y);
+        // Scan the droppable space for any matching floating tabsets first at the "can drop" location.
+        let node = (this._floating as FloatingNode)._findDropTargetNode(dragNode, x, y);
+        if (node !== undefined) {
+            return node;
+        }
+
+        // When no floating tabsets match, scan the grid space for any matching tabsets.
+        node = (this._root as RowNode)._findDropTargetNode(dragNode, x, y);
         if (node === undefined) {
             node = this._borders._findDropTargetNode(dragNode, x, y);
         }
@@ -355,6 +419,7 @@ class Model {
     _tidy() {
         //console.log("before _tidy", this.toString());
         (this._root as RowNode)._tidy();
+        (this._floating as FloatingNode)._tidy();
         //console.log("after _tidy", this.toString());
     }
 
@@ -429,6 +494,11 @@ class Model {
         attributeDefinitions.add("borderBarSize", 25);
         attributeDefinitions.add("borderEnableDrop", true).setType(Attribute.BOOLEAN);
         attributeDefinitions.add("borderClassName", undefined).setType(Attribute.STRING);
+
+        // floating tabset
+        attributeDefinitions.add("minFloatingTabsetWidth", 300).setType(Attribute.NUMBER);
+        attributeDefinitions.add("minFloatingTabsetHeight", 150).setType(Attribute.NUMBER);
+
         return attributeDefinitions;
     }
 }

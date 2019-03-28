@@ -41,6 +41,11 @@
     box-sizing: border-box;
 }
 
+.flexlayout__outline_rect--hidden {
+    visibility: hidden;
+    border: 0 none transparent;
+}
+
 .flexlayout__edge_rect {
     position: absolute;
     z-index: 1000;
@@ -78,6 +83,32 @@
     /* box-shadow: 2px 2px 4px #aaa; */
 }
 
+.flexlayout__floating {
+    position: absolute;
+    border-radius: 5px;
+    box-shadow: 2px 2px 4px #aaa;
+}
+
+.flexlayout__floating > .flexlayout__tabset {
+    border-radius: 5px;
+}
+
+.flexlayout__floating > .flexlayout__tabset > .flexlayout__tab_header_outer {
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.flexlayout__floating > .flexlayout__tab {
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    overflow: hidden;
+}
+
+.flexlayout__floating .floating__tab_content {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+}
 
 .flexlayout__tab {
     overflow: auto;
