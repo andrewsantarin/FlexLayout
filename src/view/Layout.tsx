@@ -258,6 +258,34 @@ export class Layout extends React.Component<ILayoutProps, any> {
         const floating = drawChildren.map((tabSetNode, i) => {
             const tabSetNodeId = tabSetNode.getId();
             const tabSetActive = tabSetNode.isActive();
+            const isMaximized = tabSetNode.isMaximized();
+
+            if (isMaximized) {
+                return (
+                    <React.Fragment key={tabSetNodeId}>
+                        <TabSet
+                            key={tabSetNodeId}
+                            layout={this}
+                            node={tabSetNode}
+                        />
+                        {(tabSetNode.getChildren() as Array<TabNode>).map((tabNode) => {
+                            const tabNodeId = tabNode.getId();
+                            const selectedTabNode = tabSetNode.getChildren()[tabSetNode.getSelected()];
+
+                            return (
+                                <Tab
+                                    key={tabNodeId}
+                                    layout={this}
+                                    node={tabNode}
+                                    selected={tabNode === selectedTabNode}
+                                    factory={this.props.factory}
+                                />
+                            );
+                        })}
+                    </React.Fragment>
+                );
+            }
+
             const size = {
                 width: tabSetNode.getWidth() || 0,
                 height: tabSetNode.getHeight() || 0,
