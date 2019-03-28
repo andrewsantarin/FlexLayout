@@ -7,6 +7,7 @@ import Node from "./Node";
 import Model from "./Model";
 import TabNode from "./TabNode";
 import RowNode from "./RowNode";
+import FloatingNode from "./FloatingNode";
 import BorderNode from "./BorderNode";
 import Orientation from "../Orientation";
 import IDraggable from "./IDraggable";
@@ -64,6 +65,14 @@ class TabSetNode extends Node implements IDraggable, IDropTarget {
         return this._getAttributeAsNumberOrUndefined("height");
     }
 
+    getX() {
+        return this._getAttributeAsNumberOrUndefined("x");
+    }
+
+    getY() {
+        return this._getAttributeAsNumberOrUndefined("y");
+    }
+
     isMaximized() {
         return this._model.getMaximizedTabset() === this;
     }
@@ -118,8 +127,63 @@ class TabSetNode extends Node implements IDraggable, IDropTarget {
     }
 
     /** @hidden @internal */
+    _setX(x: number) {
+        this._attributes["x"] = x;
+    }
+
+    /** @hidden @internal */
+    _setY(y: number) {
+        this._attributes["y"] = y;
+    }
+
+    /** @hidden @internal */
+    _setWidth(width: number) {
+        this._attributes["width"] = width;
+    }
+
+    /** @hidden @internal */
+    _setHeight(height: number) {
+        this._attributes["height"] = height;
+    }
+
+    /** @hidden @internal */
     _setSelected(index: number) {
         this._attributes["selected"] = index;
+    }
+
+    /** @hidden @internal */
+    _layout(rect: Rect) {
+
+        if (this.isMaximized()) {
+            rect = (this._model.getRoot() as Node).getRect();
+        }
+
+        rect = rect.removeInsets(this._getAttr("marginInsets"));
+        this._rect = rect;
+        rect = rect.removeInsets(this._getAttr("borderInsets"));
+
+        const showHeader = (this.getName() !== undefined);
+        let y = 0;
+        if (showHeader) {
+            y += this.getHeaderHeight();
+        }
+        if (this.isEnableTabStrip()) {
+            this._tabHeaderRect = new Rect(rect.x, rect.y + y, rect.width, this.getTabStripHeight());
+            y += this.getTabStripHeight();
+        }
+        this._contentRect = new Rect(rect.x, rect.y + y, rect.width, rect.height - y);
+
+        this._children.forEach((child, i) => {
+            child._layout(this._contentRect!);
+            child._setVisible(i === this.getSelected());
+        });
+    }
+
+    /** @hidden @internal */
+    _remove(node: TabNode) {
+        this._removeChild(node);
+        this._model._tidy();
+        this._setSelected(Math.max(0, this.getSelected() - 1));
     }
 
     /** @hidden @internal */
@@ -131,7 +195,7 @@ class TabSetNode extends Node implements IDraggable, IDropTarget {
             let outlineRect = this._tabHeaderRect;
             dropInfo = new DropInfo(this, outlineRect!, dockLocation, -1, "flexlayout__outline_rect");
         }
-        else if (this._contentRect!.contains(x, y)) {
+        else if (!(this._parent instanceof FloatingNode) && this._contentRect!.contains(x, y)) {
             let dockLocation = DockLocation.getLocation(this._contentRect!, x, y);
             const isDockedToCenterLocation = dockLocation === DockLocation.CENTER;
             let outlineRect = !isDockedToCenterLocation ? dockLocation.getDockRect(this._rect) : new Rect(x, y, 0, 0);
@@ -179,41 +243,6 @@ class TabSetNode extends Node implements IDraggable, IDropTarget {
     }
 
     /** @hidden @internal */
-    _layout(rect: Rect) {
-
-        if (this.isMaximized()) {
-            rect = (this._model.getRoot() as Node).getRect();
-        }
-
-        rect = rect.removeInsets(this._getAttr("marginInsets"));
-        this._rect = rect;
-        rect = rect.removeInsets(this._getAttr("borderInsets"));
-
-        const showHeader = (this.getName() !== undefined);
-        let y = 0;
-        if (showHeader) {
-            y += this.getHeaderHeight();
-        }
-        if (this.isEnableTabStrip()) {
-            this._tabHeaderRect = new Rect(rect.x, rect.y + y, rect.width, this.getTabStripHeight());
-            y += this.getTabStripHeight();
-        }
-        this._contentRect = new Rect(rect.x, rect.y + y, rect.width, rect.height - y);
-
-        this._children.forEach((child, i) => {
-            child._layout(this._contentRect!);
-            child._setVisible(i === this.getSelected());
-        });
-    }
-
-    /** @hidden @internal */
-    _remove(node: TabNode) {
-        this._removeChild(node);
-        this._model._tidy();
-        this._setSelected(Math.max(0, this.getSelected() - 1));
-    }
-
-    /** @hidden @internal */
     drop(dragNode: (Node & IDraggable), location: DockLocation, index: number) {
         const dockLocation = location;
 
@@ -257,7 +286,30 @@ class TabSetNode extends Node implements IDraggable, IDropTarget {
         }
 
         // simple_bundled dock to existing tabset
-        if (dockLocation === DockLocation.CENTER || dockLocation === DockLocation.HEADER) {
+        if (dockLocation === DockLocation.CENTER) {
+            let tabSet: TabSetNode;
+
+            if (dragNode instanceof TabNode) {
+                tabSet = new TabSetNode(this._model, {});
+                tabSet._addChild(dragNode);
+            } else {
+                tabSet = dragNode as TabSetNode;
+            }
+
+            tabSet._setX(dockLocation.x);
+            tabSet._setY(dockLocation.y);
+            tabSet._setWidth(480);
+            tabSet._setHeight(360);
+            tabSet._setRect(new Rect(dockLocation.x, dockLocation.y, 480, 360));
+
+            // create a tabset in the free-floating space.
+            const floatingNode: FloatingNode = this._model.getFloatingRoot();
+            const pos = floatingNode.getChildren().length;
+            floatingNode._addChild(tabSet, pos);
+
+            this._model._setActiveTabset(tabSet);
+        }
+        else if (dockLocation === DockLocation.HEADER) {
             let insertPos = index;
             if (insertPos === -1) {
                 insertPos = this._children.length;
@@ -276,7 +328,6 @@ class TabSetNode extends Node implements IDraggable, IDropTarget {
                 });
             }
             this._model._setActiveTabset(this);
-
         }
         else {
             let tabSet: TabSetNode | undefined;
@@ -340,11 +391,6 @@ class TabSetNode extends Node implements IDraggable, IDropTarget {
     }
 
     /** @hidden @internal */
-    _updateAttrs(json: any) {
-        TabSetNode._attributeDefinitions.update(json, this._attributes);
-    }
-
-    /** @hidden @internal */
     static _fromJson(json: any, model: Model) {
         const newLayoutNode = new TabSetNode(model, json);
 
@@ -364,6 +410,11 @@ class TabSetNode extends Node implements IDraggable, IDropTarget {
         }
 
         return newLayoutNode;
+    }
+
+    /** @hidden @internal */
+    _updateAttrs(json: any) {
+        TabSetNode._attributeDefinitions.update(json, this._attributes);
     }
 
     /** @hidden @internal */
@@ -388,6 +439,8 @@ class TabSetNode extends Node implements IDraggable, IDropTarget {
         attributeDefinitions.add("id", undefined).setType(Attribute.ID);
 
         attributeDefinitions.add("weight", 100);
+        attributeDefinitions.add("x", undefined);
+        attributeDefinitions.add("y", undefined);
         attributeDefinitions.add("width", undefined);
         attributeDefinitions.add("height", undefined);
         attributeDefinitions.add("selected", 0);
