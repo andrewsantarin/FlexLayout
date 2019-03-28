@@ -146,6 +146,7 @@ class Model {
         switch (action.type) {
             case Actions.ADD_NODE:
                 {
+                    // TODO: accomodate floating node logic also.
                     const newNode = new TabNode(this, action.data["json"]);
                     let toNode = this._idMap[action.data["toNode"]] as (Node & IDraggable);
                     if (toNode instanceof TabSetNode || toNode instanceof BorderNode || toNode instanceof RowNode) {
@@ -155,6 +156,7 @@ class Model {
                 }
             case Actions.MOVE_NODE:
                 {
+                    // TODO: accomodate floating node logic also.
                     const fromNode = this._idMap[action.data["fromNode"]] as (Node & IDraggable);
                     if (fromNode instanceof TabNode || fromNode instanceof TabSetNode) {
                         let toNode = this._idMap[action.data["toNode"]] as (Node & IDropTarget);
@@ -211,6 +213,41 @@ class Model {
                     const tabsetNode = this._idMap[action.data["tabsetNode"]];
                     if (tabsetNode instanceof TabSetNode) {
                         this._activeTabSet = tabsetNode;
+                    }
+                    break;
+                }
+            case Actions.SET_TABSET_POSITION:
+                {
+                    const tabsetNode = this._idMap[action.data["tabsetNode"]];
+                    const x = action.data["x"];
+                    const y = action.data["y"];
+                    if (tabsetNode instanceof TabSetNode) {
+                        tabsetNode._setX(x);
+                        tabsetNode._setY(y);
+                    }
+                }
+            case Actions.SET_TABSET_SIZE:
+                {
+                    const tabsetNode = this._idMap[action.data["tabsetNode"]];
+                    const width = action.data["width"];
+                    const height = action.data["height"];
+                    if (tabsetNode instanceof TabSetNode) {
+                        tabsetNode._setWidth(width);
+                        tabsetNode._setHeight(height);
+                    }
+                }
+            case Actions.TRANSFORM_TABSET:
+                {
+                    const tabsetNode = this._idMap[action.data["tabsetNode"]];
+                    const x = action.data["x"];
+                    const y = action.data["y"];
+                    const width = action.data["width"];
+                    const height = action.data["height"];
+                    if (tabsetNode instanceof TabSetNode) {
+                        tabsetNode._setX(x);
+                        tabsetNode._setY(y);
+                        tabsetNode._setWidth(width);
+                        tabsetNode._setHeight(height);
                     }
                     break;
                 }
@@ -330,7 +367,7 @@ class Model {
         return model;
     }
 
-     getSplitterSize() {
+    getSplitterSize() {
         return this._attributes["splitterSize"] as number;
     }
 
@@ -457,6 +494,11 @@ class Model {
         attributeDefinitions.add("borderBarSize", 25);
         attributeDefinitions.add("borderEnableDrop", true).setType(Attribute.BOOLEAN);
         attributeDefinitions.add("borderClassName", undefined).setType(Attribute.STRING);
+
+        // floating tabset
+        attributeDefinitions.add("minFloatingTabsetWidth", 300).setType(Attribute.NUMBER);
+        attributeDefinitions.add("minFloatingTabsetHeight", 150).setType(Attribute.NUMBER);
+
         return attributeDefinitions;
     }
 }

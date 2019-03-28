@@ -57,6 +57,12 @@ class TabNode extends Node implements IDraggable{
         return this._attributes["config"];
     }
 
+    getTabSetConfig(): JSMap<any> {
+        let config = (this.getConfig() || {}) as JSMap<any>;
+        let tabset = config.tabset || {};
+        return tabset;
+    }
+
     /**
      * Returns an object that can be used to store transient node specific data that will
      * NOT be saved in the json.
@@ -92,6 +98,15 @@ class TabNode extends Node implements IDraggable{
     /** @hidden @internal */
     _setName(name: string) {
         this._attributes["name"] = name;
+    }
+
+    /** @hidden @internal */
+    _setTabSetConfig(tabSetConfig: JSMap<any> | undefined) {
+        let config = this.getConfig();
+        if (config !== undefined) {
+            config.tabset = tabSetConfig;
+        }
+        this._attributes["config"] = config;
     }
 
     /** @hidden @internal */

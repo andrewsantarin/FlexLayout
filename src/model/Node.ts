@@ -284,6 +284,14 @@ abstract class Node {
     }
 
     /** @hidden @internal */
+    _styleWithoutPosition(style?: JSMap<any>) {
+        if (style == undefined) {
+            style = {};
+        }
+        return this._rect.styleWithoutPosition(style);
+    }
+
+    /** @hidden @internal */
     _getTempSize() {
         return this._tempSize;
     }

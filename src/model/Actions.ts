@@ -12,6 +12,9 @@ class Actions {
     static RENAME_TAB = "FlexLayout_RenameTab";
     static SELECT_TAB = "FlexLayout_SelectTab";
     static SET_ACTIVE_TABSET = "FlexLayout_SetActiveTabset";
+    static SET_TABSET_POSITION = "FlexLayout_SetTabsetPosition";
+    static SET_TABSET_SIZE = "FlexLayout_SetTabsetSize";
+    static TRANSFORM_TABSET = "FlexLayout_TransformTabset";
     static ADJUST_SPLIT = "FlexLayout_AdjustSplit";
     static ADJUST_BORDER_SPLIT = "FlexLayout_AdjustBorderSplit";
     static MAXIMIZE_TOGGLE = "FlexLayout_MaximizeToggle";
@@ -82,6 +85,56 @@ class Actions {
      */
     static setActiveTabset(tabsetNodeId: string): Action {
         return new Action(Actions.SET_ACTIVE_TABSET, { tabsetNode: tabsetNodeId });
+    }
+
+    /**
+     * Modifies the width and height of the given tabset node
+     * @param tabsetNodeId the id of the tabset node to resize
+     * @param width the new width of the tabset
+     * @param height the new height of the tabset
+     * @returns {{type: (string|string), width: *, height: *}}
+     */
+    static setTabsetSize(tabsetNodeId: string, width: number, height: number): Action {
+        return new Action(Actions.SET_TABSET_SIZE, {
+            tabsetNode: tabsetNodeId,
+            width: width,
+            height: height
+        });
+    }
+
+    /**
+     * Modifies the (x,y) CSS offset coordinates of the given tabset node
+     * @param tabsetNodeId the id of the tabset node to reposition
+     * @param x the new left offset of the tabset in pixels
+     * @param y the new top offset of the tabset in pixels
+     * @returns {{type: (string|string), width: *, height: *}}
+     */
+    static setTabsetPosition(tabsetNodeId: string, x: number, y: number): Action {
+        return new Action(Actions.SET_TABSET_SIZE, {
+            tabsetNode: tabsetNodeId,
+            x: x,
+            y: y
+        });
+    }
+
+    /**
+     * Transforms (translates and dilates) the given tabset node.
+     * @example
+     *  Actions.transformTabset("#8", {x:120, y:240}, {width:480, height:600});
+     * 
+     * @param tabsetNodeId the id of the tabset node to set as active
+     * @param position an object which defines the new position of the given tabset.
+     * @param size an object which defines the new size of the given tabset.
+     * @returns {{type: (string|string), tabsetNode: *}}
+     */
+    static transformTabset(tabsetNodeId: string, position: { x: number, y: number }, size: { width: number, height: number }): Action {
+        return new Action(Actions.TRANSFORM_TABSET, {
+            tabsetNode: tabsetNodeId,
+            x: position.x,
+            y: position.y,
+            width: size.width,
+            height: size.height
+        });
     }
 
     /**

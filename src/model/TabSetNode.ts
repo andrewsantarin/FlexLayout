@@ -65,6 +65,16 @@ class TabSetNode extends Node implements IDraggable, IDropTarget {
         return this._getAttributeAsNumberOrUndefined("height");
     }
 
+    getMinFloatingWidth() {
+        // local first, then global fallback.
+        return this._getAttributeAsNumberOrUndefined("minFloatingWidth") || this._model._getAttribute("minFloatingTabsetWidth") as number;
+    }
+
+    getMinFloatingHeight() {
+        // local first, then global fallback.
+        return this._getAttributeAsNumberOrUndefined("minFloatingHeight") || this._model._getAttribute("minFloatingTabsetHeight") as number;
+    }
+
     getX() {
         return this._getAttributeAsNumberOrUndefined("x");
     }
@@ -144,6 +154,16 @@ class TabSetNode extends Node implements IDraggable, IDropTarget {
     /** @hidden @internal */
     _setHeight(height: number) {
         this._attributes["height"] = height;
+    }
+
+    /** @hidden @internal */
+    _setMinFloatingWidth(width: number) {
+        this._attributes["minFloatingWidth"] = width;
+    }
+
+    /** @hidden @internal */
+    _setMinFloatingHeight(height: number) {
+        this._attributes["minFloatingHeight"] = height;
     }
 
     /** @hidden @internal */
@@ -242,20 +262,12 @@ class TabSetNode extends Node implements IDraggable, IDropTarget {
         return dropInfo;
     }
 
-    /** @hidden @internal */
-    drop(dragNode: (Node & IDraggable), location: DockLocation, index: number) {
-        const dockLocation = location;
-
-        if (this === dragNode) { // tabset drop into itself
-            return; // dock back to itself
-        }
-
+    removeFromParent(dragNode: (Node & IDraggable), index: number) {
         let dragParent = dragNode.getParent() as (BorderNode | TabSetNode);
         let fromIndex = 0;
         if (dragParent !== undefined) {
             fromIndex = dragParent._removeChild(dragNode);
         }
-        //console.log("removed child: " + fromIndex);
 
         // if dropping a tab back to same tabset and moving to forward position then reduce insertion index
         if (dragNode.getType() === TabNode.TYPE && dragParent === this && fromIndex < index && index > 0) {
@@ -285,92 +297,163 @@ class TabSetNode extends Node implements IDraggable, IDropTarget {
             }
         }
 
-        // simple_bundled dock to existing tabset
-        if (dockLocation === DockLocation.CENTER) {
-            let tabSet: TabSetNode;
+        return index;
+    }
 
-            if (dragNode instanceof TabNode) {
-                tabSet = new TabSetNode(this._model, {});
-                tabSet._addChild(dragNode);
-            } else {
-                tabSet = dragNode as TabSetNode;
-            }
+    dropToLayout(dragNode: (Node & IDraggable), dockLocation: DockLocation, index: number) {
+        index = this.removeFromParent(dragNode, index);
 
-            tabSet._setX(dockLocation.x);
-            tabSet._setY(dockLocation.y);
-            tabSet._setWidth(480);
-            tabSet._setHeight(360);
-            tabSet._setRect(new Rect(dockLocation.x, dockLocation.y, 480, 360));
+        switch (dockLocation) {
+            case DockLocation.HEADER:
+                {
+                    let insertPos = index === -1 ? this._children.length : index;
 
-            // create a tabset in the free-floating space.
-            const floatingNode: FloatingNode = this._model.getFloatingRoot();
-            const pos = floatingNode.getChildren().length;
-            floatingNode._addChild(tabSet, pos);
+                    if (dragNode.getType() === TabNode.TYPE) {
+                        this._addChild(dragNode, insertPos);
+                        this._setSelected(insertPos);
+                        //console.log("added child at : " + insertPos);
+                    }
+                    else {
+                        dragNode.getChildren().forEach((child, i) => {
+                            this._addChild(child, insertPos);
+                            //console.log("added child at : " + insertPos);
+                            insertPos++;
+                        });
+                    }
 
-            this._model._setActiveTabset(tabSet);
+                    this._model._setActiveTabset(this);
+
+                    break;
+                }
+            case DockLocation.LEFT:
+            case DockLocation.RIGHT:
+            case DockLocation.TOP:
+            case DockLocation.BOTTOM:
+                {
+                    let tabSet: TabSetNode | undefined;
+                    if (dragNode instanceof TabNode) {
+                        // create new tabset parent
+                        //console.log("create a new tabset");
+                        tabSet = new TabSetNode(this._model, {});
+                        tabSet._addChild(dragNode);
+                        //console.log("added child at end");
+                    }
+                    else {
+                        tabSet = dragNode as TabSetNode;
+                    }
+
+                    const parentRow = this._parent as Node;
+                    const pos = parentRow.getChildren().indexOf(this);
+
+                    if (parentRow.getOrientation() === dockLocation._orientation) {
+                        tabSet._setWeight(this.getWeight() / 2);
+                        this._setWeight(this.getWeight() / 2);
+                        //console.log("added child 50% size at: " +  pos + dockLocation.indexPlus);
+                        parentRow._addChild(tabSet, pos + dockLocation._indexPlus);
+                    }
+                    else {
+                        // create a new row to host the new tabset (it will go in the opposite direction)
+                        //console.log("create a new row");
+                        const newRow = new RowNode(this._model, {});
+                        newRow._setWeight(this.getWeight());
+                        newRow._addChild(this);
+                        this._setWeight(50);
+                        tabSet._setWeight(50);
+                        //console.log("added child 50% size at: " +  dockLocation.indexPlus);
+                        newRow._addChild(tabSet, dockLocation._indexPlus);
+
+                        parentRow._removeChild(this);
+                        parentRow._addChild(newRow, pos);
+                    }
+
+                    this._model._setActiveTabset(tabSet);
+
+                    break;
+                }
+            default:
+                break;
         }
-        else if (dockLocation === DockLocation.HEADER) {
-            let insertPos = index;
-            if (insertPos === -1) {
-                insertPos = this._children.length;
-            }
+    }
 
-            if (dragNode.getType() === TabNode.TYPE) {
-                this._addChild(dragNode, insertPos);
-                this._setSelected(insertPos);
-                //console.log("added child at : " + insertPos);
+    dropToFloating(dragNode: (Node & IDraggable), dockLocation: DockLocation, index: number) {
+        // determine initial size of the new tabset from the global config.
+        let width: number = this.getMinFloatingWidth() || 0;
+        let height: number = this.getMinFloatingHeight() || 0;
+        const { x, y } = dockLocation;
+
+        // derive the size of the new free-floating tabset from the tab's former tabset.
+        let parentNode = dragNode.getParent();
+        if (parentNode !== undefined) {
+            if (parentNode.getType() === TabSetNode.TYPE) {
+                const rootNode = parentNode.getParent();
+
+                if (rootNode !== undefined && rootNode.getType() === FloatingNode.TYPE) {
+                    const parentTabSetNode = parentNode as TabSetNode;
+                    const rect = parentTabSetNode.getRect();
+                    width = rect.width;
+                    height = rect.height;
+                }
             }
-            else {
-                dragNode.getChildren().forEach((child, i) => {
-                    this._addChild(child, insertPos);
-                    //console.log("added child at : " + insertPos);
-                    insertPos++;
-                });
+            else if (parentNode.getType() === FloatingNode.TYPE) {
+                const rect = dragNode.getRect();
+                width = rect.width;
+                height = rect.height;
             }
-            this._model._setActiveTabset(this);
+        }
+        // use the size from the tab config passed to Actions.addNode().
+        else if (dragNode.getType() === TabNode.TYPE) {
+            const tabNode = dragNode as TabNode;
+            const tabSetConfig = tabNode.getTabSetConfig();
+            width = tabSetConfig.width || width;
+            height = tabSetConfig.height || height;
+            tabNode._setTabSetConfig(undefined);
+        }
+
+        // after retrieving width & height from the parent node, remove the dragged node.
+        this.removeFromParent(dragNode, index);
+
+        let tabSet: TabSetNode;
+
+        if (dragNode.getType() === TabNode.TYPE) {
+            tabSet = new TabSetNode(this._model, {
+                x,
+                y,
+                width,
+                height,
+            });
+            tabSet._addChild(dragNode);
         }
         else {
-            let tabSet: TabSetNode | undefined;
-            if (dragNode instanceof TabNode) {
-                // create new tabset parent
-                //console.log("create a new tabset");
-                tabSet = new TabSetNode(this._model, {});
-                tabSet._addChild(dragNode);
-                //console.log("added child at end");
-                dragParent = tabSet;
-            }
-            else {
-                tabSet = dragNode as TabSetNode;
-            }
-
-            const parentRow = this._parent as Node;
-            const pos = parentRow.getChildren().indexOf(this);
-
-            if (parentRow.getOrientation() === dockLocation._orientation) {
-                tabSet._setWeight(this.getWeight() / 2);
-                this._setWeight(this.getWeight() / 2);
-                //console.log("added child 50% size at: " +  pos + dockLocation.indexPlus);
-                parentRow._addChild(tabSet, pos + dockLocation._indexPlus);
-            }
-            else {
-                // create a new row to host the new tabset (it will go in the opposite direction)
-                //console.log("create a new row");
-                const newRow = new RowNode(this._model, {});
-                newRow._setWeight(this.getWeight());
-                newRow._addChild(this);
-                this._setWeight(50);
-                tabSet._setWeight(50);
-                //console.log("added child 50% size at: " +  dockLocation.indexPlus);
-                newRow._addChild(tabSet, dockLocation._indexPlus);
-
-                parentRow._removeChild(this);
-                parentRow._addChild(newRow, pos);
-            }
-            this._model._setActiveTabset(tabSet);
-
+            tabSet = dragNode as TabSetNode;
+            tabSet._setX(x);
+            tabSet._setY(y);
+            tabSet._setWidth(width);
+            tabSet._setHeight(height);
+            tabSet._setRect(new Rect(x, y, width, height));
         }
-        this._model._tidy();
 
+        // create a tabset in the free-floating space.
+        const floatingNode: FloatingNode = this._model.getFloatingRoot();
+        const pos = floatingNode.getChildren().length;
+        floatingNode._addChild(tabSet, pos);
+
+        this._model._setActiveTabset(tabSet);
+    }
+
+    /** @hidden @internal */
+    drop(dragNode: (Node & IDraggable), dockLocation: DockLocation, index: number) {
+        if (this === dragNode) {
+            return;
+        }
+
+        if (dockLocation === DockLocation.CENTER) {
+            this.dropToFloating(dragNode, dockLocation, index);
+        }
+        else {
+            this.dropToLayout(dragNode, dockLocation, index);
+        }
+
+        this._model._tidy();
     }
 
     /** @hidden @internal */
@@ -459,6 +542,9 @@ class TabSetNode extends Node implements IDraggable, IDropTarget {
 
         attributeDefinitions.addInherited("headerHeight", "tabSetHeaderHeight");
         attributeDefinitions.addInherited("tabStripHeight", "tabSetTabStripHeight");
+
+        attributeDefinitions.addInherited("minFloatingWidth", "minFloatingTabsetWidth");
+        attributeDefinitions.addInherited("minFloatingHeight", "minFloatingTabsetHeight");
         return attributeDefinitions;
     }
 }
