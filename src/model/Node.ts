@@ -160,7 +160,7 @@ abstract class Node {
     }
 
     /** @hidden @internal */
-    _getDrawChildren(): Array<Node> | undefined{
+    _getDrawChildren(): Array<Node> | undefined {
         return this._children;
     }
 
@@ -241,6 +241,7 @@ abstract class Node {
                 return (this._model._getOnAllowDrop() as (dragNode: (Node), dropInfo: DropInfo) => boolean)(dragNode, dropInfo);
             }
         }
+
         return true;
     }
 
@@ -306,7 +307,7 @@ abstract class Node {
     /** @hidden @internal */
     abstract _updateAttrs(json: any): void;
     /** @hidden @internal */
-    abstract _getAttributeDefinitions(): AttributeDefinitions ;
+    abstract _getAttributeDefinitions(): AttributeDefinitions;
     /** @hidden @internal */
     abstract _toJson(): any;
 
