@@ -22,11 +22,14 @@ For the installation & usage, check the original docs below. I've made some addi
 
 This fork contains additional features not included in the original. It is currently being pitched as a proof of concept at https://github.com/caplin/FlexLayout/issues/61. To use this specific fork in your projects, follow these commands:
 
-```
+```sh
 npm install react --save
 npm install react-dom --save
+npm install react-rnd --save # This dependency is needed for the free-floating tabs
 npm install @andrewsantarin/extended-flexlayout-react --save
 ```
+
+Then, follow the rest of the docs as usual.
 
 If you want to see this library's tie-in examples, then do this:
 
