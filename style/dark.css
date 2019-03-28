@@ -40,6 +40,11 @@
     box-sizing: border-box;
 }
 
+.flexlayout__outline_rect--hidden {
+    visibility: hidden;
+    border: 0 none transparent;
+}
+
 .flexlayout__edge_rect {
     position: absolute;
     z-index: 1000;
