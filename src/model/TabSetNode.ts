@@ -65,6 +65,16 @@ class TabSetNode extends Node implements IDraggable, IDropTarget {
         return this._getAttributeAsNumberOrUndefined("height");
     }
 
+    getMinFloatingWidth() {
+        // local first, then global fallback.
+        return this._getAttributeAsNumberOrUndefined("minFloatingWidth") || this._model._getAttribute("minFloatingTabsetWidth") as number;
+    }
+
+    getMinFloatingHeight() {
+        // local first, then global fallback.
+        return this._getAttributeAsNumberOrUndefined("minFloatingHeight") || this._model._getAttribute("minFloatingTabsetHeight") as number;
+    }
+
     getX() {
         return this._getAttributeAsNumberOrUndefined("x");
     }
@@ -144,6 +154,16 @@ class TabSetNode extends Node implements IDraggable, IDropTarget {
     /** @hidden @internal */
     _setHeight(height: number) {
         this._attributes["height"] = height;
+    }
+
+    /** @hidden @internal */
+    _setMinFloatingWidth(width: number) {
+        this._attributes["minFloatingWidth"] = width;
+    }
+
+    /** @hidden @internal */
+    _setMinFloatingHeight(height: number) {
+        this._attributes["minFloatingHeight"] = height;
     }
 
     /** @hidden @internal */
@@ -356,25 +376,37 @@ class TabSetNode extends Node implements IDraggable, IDropTarget {
     }
 
     dropToFloating(dragNode: (Node & IDraggable), dockLocation: DockLocation, index: number) {
-        // before removing the dragged node from its parent,
-        // derive the dimensions of the new free-floating tabset
-        // from the dragged node's would-be-former parent node
-        //
-        // ...if and only if the parent is also a free-floating tabset.
-        let width = 480;
-        let height = 600;
+        // determine initial size of the new tabset from the global config.
+        let width: number = this.getMinFloatingWidth() || 0;
+        let height: number = this.getMinFloatingHeight() || 0;
         const { x, y } = dockLocation;
 
+        // derive the size of the new free-floating tabset from the tab's former tabset.
         let parentNode = dragNode.getParent();
-        if (parentNode !== undefined && parentNode.getType() === TabSetNode.TYPE) {
-            const rootNode = parentNode.getParent();
+        if (parentNode !== undefined) {
+            if (parentNode.getType() === TabSetNode.TYPE) {
+                const rootNode = parentNode.getParent();
 
-            if (rootNode !== undefined && rootNode.getType() === FloatingNode.TYPE) {
-                const parentTabSetNode = parentNode as TabSetNode;
-                const rect = parentTabSetNode.getRect();
+                if (rootNode !== undefined && rootNode.getType() === FloatingNode.TYPE) {
+                    const parentTabSetNode = parentNode as TabSetNode;
+                    const rect = parentTabSetNode.getRect();
+                    width = rect.width;
+                    height = rect.height;
+                }
+            }
+            else if (parentNode.getType() === FloatingNode.TYPE) {
+                const rect = dragNode.getRect();
                 width = rect.width;
                 height = rect.height;
             }
+        }
+        // use the size from the tab config passed to Actions.addNode().
+        else if (dragNode.getType() === TabNode.TYPE) {
+            const tabNode = dragNode as TabNode;
+            const tabSetConfig = tabNode.getTabSetConfig();
+            width = tabSetConfig.width || width;
+            height = tabSetConfig.height || height;
+            tabNode._setTabSetConfig(undefined);
         }
 
         // after retrieving width & height from the parent node, remove the dragged node.
@@ -383,18 +415,22 @@ class TabSetNode extends Node implements IDraggable, IDropTarget {
         let tabSet: TabSetNode;
 
         if (dragNode.getType() === TabNode.TYPE) {
-            tabSet = new TabSetNode(this._model, {});
+            tabSet = new TabSetNode(this._model, {
+                x,
+                y,
+                width,
+                height,
+            });
             tabSet._addChild(dragNode);
         }
         else {
             tabSet = dragNode as TabSetNode;
+            tabSet._setX(x);
+            tabSet._setY(y);
+            tabSet._setWidth(width);
+            tabSet._setHeight(height);
+            tabSet._setRect(new Rect(x, y, width, height));
         }
-
-        tabSet._setX(x);
-        tabSet._setY(y);
-        tabSet._setWidth(width);
-        tabSet._setHeight(height);
-        tabSet._setRect(new Rect(x, y, width, height));
 
         // create a tabset in the free-floating space.
         const floatingNode: FloatingNode = this._model.getFloatingRoot();
@@ -506,6 +542,9 @@ class TabSetNode extends Node implements IDraggable, IDropTarget {
 
         attributeDefinitions.addInherited("headerHeight", "tabSetHeaderHeight");
         attributeDefinitions.addInherited("tabStripHeight", "tabSetTabStripHeight");
+
+        attributeDefinitions.addInherited("minFloatingWidth", "minFloatingTabsetWidth");
+        attributeDefinitions.addInherited("minFloatingHeight", "minFloatingTabsetHeight");
         return attributeDefinitions;
     }
 }
