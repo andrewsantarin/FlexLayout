@@ -68,6 +68,14 @@ npm install
 npm start
 ```
 
+This fork contains additional features not included in the original. To use this specific fork in your projects, follow these commands:
+
+```
+npm install react --save
+npm install react-dom --save
+npm install @andrewsantarin/extended-flexlayout-react --save
+```
+
 Replace the `wip/<the-wip-branch-name>` with any particular development branch I'm working on. If you want to see what's in store for this library, don't look at the `master` branch. Instead, refer to one of these three groups:
 
 - `develop` - merge of all `feature` commits
