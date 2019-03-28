@@ -47,7 +47,7 @@ export default class App extends React.Component<any, { layoutFile: string | nul
         }
 
         if (!loaded) {
-            Utils.downloadFile("layouts/" + layoutName + ".layout", this.load.bind(this), this.error.bind(this));
+            Utils.downloadFile("layouts/" + layoutName + ".layout.json", this.load.bind(this), this.error.bind(this));
         }
     }
 
