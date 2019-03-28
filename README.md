@@ -17,46 +17,16 @@ See my Imgur upload (https://i.imgur.com/Qs2ohCQ.png) for a rough prototype idea
 ### Premise and Objective
 If you're in dire need of a React.js library that supports tabsets which can both be separated on the grid and float freely one the screen, then this extended library is most likely for you.
 
-The library extension was built for an upcoming product at my full-time job, actually. There are a lot of amazing libraries out there which support dock-like features in the browser, two of which are built specifically for React (this library is one of them!):
-
-- https://github.com/caplin/FlexLayout ([demo](https://rawgit.com/caplin/FlexLayout/demos/demos/v0.30/demo/index.html))
-
-  You're looking at it (or rather, its extension) right now.
-
-- https://github.com/golden-layout/golden-layout ([demo](http://golden-layout.com))
-
-  jQuery dependent, even if you use React.js
-
-- https://github.com/nomcopter/react-mosaic ([demo](https://nomcopter.github.io/react-mosaic))
-
-  It integrates with https://github.com/palantir/blueprint (`react-mosaic` was formerly https://github.com/palantir/react-mosaic; same author!) if you want to use that UI toolkit, really cool; its docking API -- not so much.
-
-- https://github.com/WebCabin/wcDocker ([demo](http://docker.webcabin.org))
-
-  Nice and all, but I can't find any React.js integration docs anywhere. also sadly jQuery-dependent, like `golden-layout`.
-
-- https://github.com/coderespawn/dock-spawn ([demo](http://www.dockspawn.com/))
-
-  Written in Dart. Not what I want.
-
-- https://github.com/phosphorjs/phosphor ([demo](http://phosphorjs.github.io/examples/dockpanel))
-
-  Widget feels really snappy, but I'll have to write my project as a Phosphor.js project first as the main, then React.js in the underlying components. Not what I want.
-
-- [ExtJS `Ext.WindowManager`](https://docs.sencha.com/extjs/6.5.2/classic/Ext.WindowManager.html)
-
-  My colleagues currently use this for **existing** projects only. Not what I want.
-
-In all of my findings, none of them (not even vanilla `FlexLayout`) are even this close to supporting the docking system for my needs: 
-
-- It needs to work in an existing React ecosystem. Therefore, no, I can't use Dart, Phosphor or jQuery.
-- It needs to present the widgets like how an IDE does: tabs grouped into tabsets grouped into columns grouped into rows, floating tabsets and then some.
-- It needs to be actively maintained, not a 3-year fossil.
-
-All of this research and development started [here](https://github.com/caplin/FlexLayout/issues/11) and [here](https://github.com/golden-layout/golden-layout/issues/189).
-
 ### Where to start? / Installation / Usage
 For the installation & usage, check the original docs below. I've made some additional details based on what I've contributed so far.
+
+This fork contains additional features not included in the original. To use this specific fork in your projects, follow these commands:
+
+```
+npm install react --save
+npm install react-dom --save
+npm install @andrewsantarin/extended-flexlayout-react --save
+```
 
 If you want to see this library's tie-in examples, then do this:
 
@@ -66,14 +36,6 @@ cd FlexLayout
 git checkout -b branch origin/wip/<the-wip-branch-name>
 npm install
 npm start
-```
-
-This fork contains additional features not included in the original. To use this specific fork in your projects, follow these commands:
-
-```
-npm install react --save
-npm install react-dom --save
-npm install @andrewsantarin/extended-flexlayout-react --save
 ```
 
 Replace the `wip/<the-wip-branch-name>` with any particular development branch I'm working on. If you want to see what's in store for this library, don't look at the `master` branch. Instead, refer to one of these three groups:
@@ -105,27 +67,27 @@ Try it now using [JSFiddle](https://jsfiddle.net/9x6hecdw/1)
 FlexLayout's only dependency is React.
 
 Features:
-*	splitters
-*	tabs
-*	tab dragging and ordering
-*	tabset dragging (move all the tabs in a tabset in one operation)
-*	dock to tabset or edge of frame
-*	maximize tabset (double click tabset header or use icon)
-*	tab overflow (show menu when tabs overflow)
-*   border tabsets
-*	floating tabsets
-*	submodels, allow layouts inside layouts
-*	tab renaming (double click tab text to rename)
-*	themeing - light and dark
-*	touch events - works on mobile devices (iPad, Android)
-*   add tabs using drag, indirect drag, add to active tabset, add to tabset by id
-*   preferred pixel size tabsets
-*   tabset with headers
-*	tab and tabset attributes: enableHeader, enableTabStrip, enableDock, enableDrop...
-*	customizable tabs and tabset header rendering
-*   `[esc]` key to cancel drag
-*	typescript type declarations
-*	supports overriding css class names via the classNameMapper prop, for use in css modules
+* splitters
+* tabs
+* tab dragging and ordering
+* tabset dragging (move all the tabs in a tabset in one operation)
+* dock to tabset or edge of frame or (**NEW!**) free-floating space
+* maximize tabset (double click tabset header or use icon)
+* tab overflow (show menu when tabs overflow)
+* border tabsets
+* floating tabsets (**NEW!**)
+* submodels, allow layouts inside layouts
+* tab renaming (double click tab text to rename)
+* theming - light and dark
+* touch events - works on mobile devices (iPad, Android)
+* add tabs using drag, indirect drag, add to active tabset, add to tabset by id
+* preferred pixel size tabsets
+* tabset with headers
+* tab and tabset attributes: enableHeader, enableTabStrip, enableDock, enableDrop...
+* customizable tabs and tabset header rendering
+* `[esc]` key to cancel drag
+* typescript type declarations
+* supports overriding css class names via the classNameMapper prop, for use in css modules
 
 ## Installation
 
@@ -198,7 +160,7 @@ Consider this typical use case and its implementation code below:
 ```javascript
 const json = {
   global: {},
-  layout: { // Required
+  layout: {      // Required
     type: "row", // Also required.
     weight: 100, // Also required.
     children: [
@@ -230,19 +192,19 @@ const json = {
       },
     ],
   },
-  floating: { // Required
+  floating: {         // Required
     type: "floating", // Also required.
-    children: [ 	  // Also required.
+    children: [ 	    // Also required.
       // Optional children elements.
       // If you'd rather not have any elements on this layer, leave the "children" array empty.
       // You may only nest tabsets up to 1 level from the floating element.
       {
         type: "tabset",
         // Use the following on the tabset instead of "weight".
-        x: 125,			// From the topmost pixel of the layout root element.
-        y: 250,			// From the leftmost pixel of the layout root element.
-        width: 600,		// Initial pixel width of the child element.
-        height: 480,	// Initial pixel height of the child element.
+        x: 125,			    // From the topmost pixel of the layout root element.
+        y: 250,			    // From the leftmost pixel of the layout root element.
+        width: 600,		  // Initial pixel width of the child element.
+        height: 480,	  // Initial pixel height of the child element.
         // ------------ //
         selected: 0,
         children: [
