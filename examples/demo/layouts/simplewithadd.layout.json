@@ -1,0 +1,100 @@
+{
+  "global": {
+    "tabDragSpeed": 0.15
+  },
+  "layout": {
+    "type": "row",
+    "weight": 100,
+    "children": [
+      {
+        "type": "tabset",
+        "weight": 50,
+        "selected": 0,
+        "children": [
+          {
+            "type": "tab",
+            "name": "Things to try",
+            "component": "text",
+            "config": {
+              "text": "<ul><li>drag tabs</li><li>drag splitters</li><li>double click on tab to rename</li><li>double click on tabstrip to maximize</li><li>use the Add button to add another tab</li></ul>"
+            }
+          }
+        ]
+      },
+      {
+        "type": "tabset",
+        "weight": 50,
+        "selected": 0,
+        "children": [
+          {
+            "type": "tab",
+            "name": "two",
+            "component": "text",
+            "config": {
+              "text": "<b>The number two.</b>"
+            }
+          }
+        ]
+      },
+      {
+        "type": "tabset",
+        "weight": 50,
+        "selected": 0,
+        "children": [
+          {
+            "type": "tab",
+            "name": "three",
+            "component": "text",
+            "config": {
+              "text": "Going for a third"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "floatings": [
+    {
+      "type": "tabset",
+      "top": 45,
+      "left": 60,
+      "width": 800,
+      "height": 600,
+      "children": [
+        {
+          "type": "tab",
+          "name": "Stephen King's It: FlexLayout Chronicles",
+          "component": "text",
+          "config": {
+            "text": "Don't you want your boat back, Flexie?"
+          }
+        },
+        {
+          "type": "tab",
+          "component": "text",
+          "name": "Stephen King's It: FlexLayout Chronicles: The Floating",
+          "config": {
+            "text": "It'll float, too."
+          }
+        }
+      ]
+    },
+    {
+      "type": "tabset",
+      "top": 100,
+      "left": 110,
+      "width": 250,
+      "height": 120,
+      "children": [
+        {
+          "type": "tab",
+          "name": "Tabby cat",
+          "component": "text",
+          "config": {
+            "text": "Another floating tab appears!"
+          }
+        }
+      ]
+    }
+  ]
+}

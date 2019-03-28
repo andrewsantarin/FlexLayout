@@ -1,12 +1,13 @@
 import * as React from "react";
-import * as ReactDOM from "react-dom";
+
 import * as FlexLayout from "../../src/index";
 import Utils from "./Utils";
+import SimpleTable from "./SimpleTable";
 import { Node, TabSetNode, TabNode, DropInfo, BorderNode } from "../../src/index";
 
 var fields = ["Name", "ISIN", "Bid", "Ask", "Last", "Yield"];
 
-class App extends React.Component<any, { layoutFile: string | null, model: FlexLayout.Model | null, adding: boolean }> {
+export default class App extends React.Component<any, { layoutFile: string | null, model: FlexLayout.Model | null, adding: boolean }> {
 
     loadingLayoutName?: string;
 
@@ -46,7 +47,7 @@ class App extends React.Component<any, { layoutFile: string | null, model: FlexL
         }
 
         if (!loaded) {
-            Utils.downloadFile("layouts/" + layoutName + ".layout", this.load.bind(this), this.error.bind(this));
+            Utils.downloadFile("layouts/" + layoutName + ".layout.json", this.load.bind(this), this.error.bind(this));
         }
     }
 
@@ -82,7 +83,23 @@ class App extends React.Component<any, { layoutFile: string | null, model: FlexL
         if (this.state.model!.getMaximizedTabset() == null) {
             (this.refs.layout as FlexLayout.Layout).addTabWithDragAndDropIndirect("Add grid<br>(Drag to location)", {
                 component: "grid",
-                name: "a new grid"
+                name: "a new grid",
+            }, this.onAdded.bind(this));
+            this.setState({ adding: true });
+        }
+    }
+
+    onAddClickCustomSize(event: Event) {
+        if (this.state.model!.getMaximizedTabset() == null) {
+            (this.refs.layout as FlexLayout.Layout).addTabWithDragAndDropIndirect("Add (600 x 200)px grid if free floating<br>(Drag to location)", {
+                component: "grid",
+                name: "a new grid",
+                config: {
+                    tabset: { // Prefixed size
+                        width: 600,
+                        height: 200,
+                    },
+                },
             }, this.onAdded.bind(this));
             this.setState({ adding: true });
         }
@@ -115,7 +132,9 @@ class App extends React.Component<any, { layoutFile: string | null, model: FlexL
                 node.getExtraData().data = this.makeFakeData();
             }
 
-            return <SimpleTable fields={fields} onClick={this.onTableClick.bind(this, node)} data={node.getExtraData().data} />;
+            return <div className="floating__tab_content">
+                <SimpleTable fields={fields} onClick={this.onTableClick.bind(this, node)} data={node.getExtraData().data} />
+            </div>;
         }
         else if (component === "sub") {
             var model = node.getExtraData().model;
@@ -201,6 +220,7 @@ class App extends React.Component<any, { layoutFile: string | null, model: FlexL
                     <option value="trader">Trader</option>
                 </select>
                 <button onClick={this.onReloadFromFile.bind(this)}>reload from file</button>
+                <button disabled={this.state.adding} style={{ float: "right" }} onClick={this.onAddClickCustomSize.bind(this)}>Add (Component-Specific Tabset Size)</button>
                 <button disabled={this.state.adding} style={{ float: "right" }} onClick={this.onAddClick.bind(this)}>Add</button>
                 <button style={{ float: "right" }} onClick={this.onShowLayoutClick.bind(this)}>Show Layout JSON in Console</button>
                 <select style={{ float: "right" }} onChange={this.onThemeChange.bind(this)}>
@@ -238,30 +258,3 @@ class App extends React.Component<any, { layoutFile: string | null, model: FlexL
         return a.join("");
     }
 }
-
-class SimpleTable extends React.Component<{ fields: any, data: any, onClick: any }, any> {
-    shouldComponentUpdate() {
-        return true;
-    }
-
-    render() {
-        var headercells = this.props.fields.map(function (field:any) {
-            return <th key={field}>{field}</th>;
-        });
-
-        var rows = [];
-        for (var i = 0; i < this.props.data.length; i++) {
-            var row = this.props.fields.map((field:any) => <td key={field}>{this.props.data[i][field]}</td>);
-            rows.push(<tr key={i}>{row}</tr>);
-        }
-
-        return <table className="simple_table" onClick={this.props.onClick}>
-            <tbody>
-                <tr>{headercells}</tr>
-                {rows}
-            </tbody>
-        </table>;
-    }
-}
-
-ReactDOM.render(<App />, document.getElementById("container"));

@@ -1,4 +1,5 @@
 import * as React from "react";
+
 import PopupMenu from "../PopupMenu";
 import Actions from "../model/Actions";
 import TabSetNode from "../model/TabSetNode";
@@ -7,13 +8,12 @@ import Layout from "./Layout";
 import { TabButton } from "./TabButton";
 
 /** @hidden @internal */
-export interface ITabSetProps {
+export interface IFloatingTabSetProps {
     layout: Layout,
     node: TabSetNode
 }
 
-/** @hidden @internal */
-export class TabSet extends React.Component<ITabSetProps, any> {
+export class FloatingTabSet extends React.Component<IFloatingTabSetProps, any> {
     headerRef?: HTMLDivElement;
     overflowbuttonRef: any;
     toolbarRef?: HTMLDivElement;
@@ -22,7 +22,7 @@ export class TabSet extends React.Component<ITabSetProps, any> {
     showOverflow: boolean;
     showToolbar: boolean;
 
-    constructor(props: ITabSetProps) {
+    constructor(props: IFloatingTabSetProps) {
         super(props);
         this.recalcVisibleTabs = true;
         this.showOverflow = false;
@@ -38,7 +38,7 @@ export class TabSet extends React.Component<ITabSetProps, any> {
         this.updateVisibleTabs();
     }
 
-    componentWillReceiveProps(nextProps: ITabSetProps) {
+    componentWillReceiveProps(nextProps: IFloatingTabSetProps) {
         this.showToolbar = true;
         this.showOverflow = false;
         this.recalcVisibleTabs = true;
@@ -79,7 +79,8 @@ export class TabSet extends React.Component<ITabSetProps, any> {
         let cm = this.props.layout.getClassName;
 
         const node = this.props.node;
-        const style = node._styleWithPosition();
+        let { top, left, height, ...style } = node._styleWithoutPosition();
+        style.height = node.getTabStripHeight() + "px";
 
         if (this.props.node.isMaximized()) {
             style.zIndex = 100;
@@ -239,6 +240,3 @@ export class TabSet extends React.Component<ITabSetProps, any> {
         }
     }
 }
-
-
-// export default TabSet;
