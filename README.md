@@ -36,9 +36,14 @@ If you want to see this library's tie-in examples, then do this:
 ```sh
 git clone https://github.com/andrewsantarin/FlexLayout.git
 cd FlexLayout
-git checkout -b branch origin/wip/<the-wip-branch-name>
 npm install
 npm start
+```
+
+If you're in need to look at the works in progress:
+
+```
+git checkout -b branch origin/wip/<the-wip-branch-name>
 ```
 
 Replace the `wip/<the-wip-branch-name>` with any particular development branch I'm working on. If you want to see what's in store for this library, don't look at the `master` branch. Instead, refer to one of these three groups:
