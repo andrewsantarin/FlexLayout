@@ -17,6 +17,10 @@ See my Imgur upload (https://i.imgur.com/Qs2ohCQ.png) for a rough prototype idea
 ### Premise and Objective
 If you're in dire need of a React.js library that supports tabsets which can both be separated on the grid and float freely one the screen, then this extended library is most likely for you.
 
+### Demo
+- Github repo: https://github.com/andrewsantarin/extended-flexlayout-react-example
+- Live code: https://codesandbox.io/s/github/andrewsantarin/extended-flexlayout-react-example
+
 ### Where to start? / Installation / Usage
 For the installation & usage, check the original docs below. I've made some additional details based on what I've contributed so far.
 
